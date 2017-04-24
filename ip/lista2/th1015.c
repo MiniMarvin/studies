@@ -2,12 +2,14 @@
 #include <stdlib.h>
 
 int main(int argc, char const *argv[]) {
-	int x, y, i = 1, n = 0, s_x2 = 0, s_x = 0, s_y = 0, s_xy = 0;
-	float a, b, d;
+	double x, y, s_x2 = 0, s_x = 0, s_y = 0, s_xy = 0;
+	double a, b, d;
+	int i = 1, n = 0;
+
 	scanf(" %d", &n);
 
 	for (i = 0; i < n; ++i) {
-		scanf(" %d %d", &x, &y);
+		scanf(" %lf %lf", &x, &y);
 		s_x2 += x*x;
 		s_x += x;
 		s_y += y;
