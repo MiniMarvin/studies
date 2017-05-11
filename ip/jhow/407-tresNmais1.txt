@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+int main() {
+    
+    int x = 0, y = 0, aux = 0, i = 0, biggerValue = 0, n = 0, count = 0;
+    
+    //When scanf not return EOF (End of File), it continue getting data from stdin
+    while(scanf("%d %d", &x, &y) != EOF) {
+        
+        //Get the bigger value between x and y
+        if(y > x) {
+             //biggest value is y  
+             n = y;
+             aux = x;
+        } else {
+            n = x;
+            aux = y;
+        }
+        
+        for(i = n; i >= aux; i--) {
+            
+            while(n != 1) {
+
+                if(!(n%2)) {
+                    n /= 2;
+                } else {
+                    n = n*3 + 1;
+                }
+                count++;
+            }
+            count++;
+            n = i;
+            if(count > biggerValue) biggerValue = count;
+            count = 0;
+        }
+        printf("%d %d %d\n", x, y, biggerValue);
+        biggerValue = 0;
+    }
+    
+    return 0;
+}

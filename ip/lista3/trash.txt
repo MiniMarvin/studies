@@ -1,0 +1,332 @@
+id: 20, estoque: 93
+id: 5, estoque: 81
+id: 67, estoque: 29
+id: 83, estoque: 21
+id: 88, estoque: 86
+id: 87, estoque: 98
+id: 43, estoque: 58
+id: 94, estoque: 11
+id: 33, estoque: 2
+id: 7, estoque: 83
+id: 73, estoque: 34
+id: 74, estoque: 64
+id: 50, estoque: 23
+id: 80, estoque: 34
+id: 17, estoque: 26
+id: 1, estoque: 58
+id: 43, estoque: 88
+id: 16, estoque: 84
+id: 36, estoque: 94
+id: 19, estoque: 64
+id: 89, estoque: 87
+id: 49, estoque: 26
+id: 31, estoque: 36
+id: 35, estoque: 97
+id: 97, estoque: 57
+id: 89, estoque: 130
+id: 75, estoque: 37
+id: 98, estoque: 94
+id: 94, estoque: 32
+id: 27, estoque: 47
+id: 41, estoque: 54
+id: 8, estoque: 12
+id: 75, estoque: 124
+id: 17, estoque: 34
+id: 15, estoque: 23
+id: 84, estoque: 21
+id: 63, estoque: 38
+id: 38, estoque: 41
+id: 24, estoque: 78
+id: 5, estoque: 84
+id: 38, estoque: 123
+id: 43, estoque: 143
+id: 23, estoque: 27
+id: 46, estoque: 52
+id: 6, estoque: 55
+id: 40, estoque: 46
+id: 7, estoque: 96
+id: 31, estoque: 128
+id: 58, estoque: 90
+id: 81, estoque: 21
+id: 49, estoque: 50
+id: 6, estoque: 78
+id: 11, estoque: 13
+id: 1, estoque: 109
+id: 5, estoque: 87
+id: 87, estoque: 190
+id: 79, estoque: 68
+id: 81, estoque: 69
+id: 89, estoque: 136
+id: 89, estoque: 203
+id: 32, estoque: 53
+id: 3, estoque: 46
+id: 87, estoque: 221
+id: 90, estoque: 71
+id: 58, estoque: 183
+id: 3, estoque: 116
+id: 42, estoque: 55
+id: 100, estoque: -1905370947
+id: 72, estoque: 78
+id: 81, estoque: 80
+id: 73, estoque: 43
+id: 51, estoque: 91
+id: 83, estoque: 107
+id: 29, estoque: 53
+id: 55, estoque: 66
+id: 38, estoque: 130
+id: 38, estoque: 149
+id: 91, estoque: 12
+id: 48, estoque: 47
+id: 12, estoque: 7
+id: 57, estoque: 74
+id: 89, estoque: 262
+id: 33, estoque: 23
+id: 71, estoque: 64
+id: 44, estoque: 75
+id: 54, estoque: 62
+id: 45, estoque: 22
+id: 33, estoque: 99
+id: 61, estoque: 96
+id: 64, estoque: 21
+id: 56, estoque: 50
+id: 9, estoque: 67
+id: 70, estoque: 31
+id: 81, estoque: 121
+id: 80, estoque: 92
+id: 13, estoque: 61
+id: 29, estoque: 101
+id: 89, estoque: 280
+id: 38, estoque: 224
+id: 14, estoque: 6
+OK
+id: 48, estoque: 27
+OK
+id: 58, estoque: 126
+ESTOQUE INSUFICIENTE
+id: 27, estoque: 47
+OK
+id: 29, estoque: 38
+OK
+id: 90, estoque: 50
+ESTOQUE INSUFICIENTE
+id: 53, estoque: 0
+OK
+id: 63, estoque: 30
+OK
+id: 24, estoque: 10
+ESTOQUE INSUFICIENTE
+id: 95, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 66, estoque: 0
+OK
+id: 5, estoque: 24
+ESTOQUE INSUFICIENTE
+id: 86, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 64, estoque: 21
+OK
+id: 58, estoque: 83
+OK
+id: 31, estoque: 35
+ESTOQUE INSUFICIENTE
+id: 63, estoque: 30
+ESTOQUE INSUFICIENTE
+id: 37, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 37, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 85, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 99, estoque: 0
+OK
+id: 35, estoque: 32
+ESTOQUE INSUFICIENTE
+id: 53, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 56, estoque: 50
+ESTOQUE INSUFICIENTE
+id: 95, estoque: 0
+OK
+id: 1, estoque: 68
+OK
+id: 63, estoque: 29
+ESTOQUE INSUFICIENTE
+id: 23, estoque: 27
+OK
+id: 63, estoque: 14
+OK
+id: 3, estoque: 36
+OK
+id: 74, estoque: 20
+ESTOQUE INSUFICIENTE
+id: 8, estoque: 12
+ESTOQUE INSUFICIENTE
+id: 72, estoque: 78
+ESTOQUE INSUFICIENTE
+id: 72, estoque: 78
+OK
+id: 35, estoque: 1
+ESTOQUE INSUFICIENTE
+id: 54, estoque: 62
+ESTOQUE INSUFICIENTE
+id: 67, estoque: 29
+OK
+id: 29, estoque: 24
+ESTOQUE INSUFICIENTE
+id: 21, estoque: 0
+OK
+id: 58, estoque: 62
+ESTOQUE INSUFICIENTE
+id: 35, estoque: 1
+ESTOQUE INSUFICIENTE
+id: 78, estoque: 0
+OK
+id: 83, estoque: 53
+OK
+id: 29, estoque: 2
+ESTOQUE INSUFICIENTE
+id: 2, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 2, estoque: 0
+OK
+id: 75, estoque: 116
+OK
+id: 44, estoque: 61
+ESTOQUE INSUFICIENTE
+id: 64, estoque: 21
+ESTOQUE INSUFICIENTE
+id: 94, estoque: 32
+OK
+id: 16, estoque: 70
+ESTOQUE INSUFICIENTE
+id: 30, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 96, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 37, estoque: 0
+OK
+id: 40, estoque: 1
+OK
+id: 54, estoque: 41
+OK
+id: 67, estoque: 1
+OK
+id: 36, estoque: 93
+ESTOQUE INSUFICIENTE
+id: 56, estoque: 50
+ESTOQUE INSUFICIENTE
+id: 95, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 62, estoque: 0
+ESTOQUE INSUFICIENTE
+id: 6, estoque: 78
+OK
+id: 51, estoque: 43
+ESTOQUE INSUFICIENTE
+id: 19, estoque: 64
+ESTOQUE INSUFICIENTE
+id: 83, estoque: 53
+ESTOQUE INSUFICIENTE
+id: 73, estoque: 43
+ESTOQUE INSUFICIENTE
+id: 46, estoque: 52
+1 68
+1 68
+3 36
+3 36
+5 24
+5 24
+5 24
+6 78
+6 78
+7 96
+7 96
+8 12
+9 67
+11 13
+12 7
+13 61
+14 6
+15 23
+16 70
+17 34
+17 34
+19 64
+20 93
+23 27
+24 10
+27 47
+29 2
+29 2
+31 35
+31 35
+32 53
+33 99
+33 99
+33 99
+35 1
+36 93
+38 224
+38 224
+38 224
+38 224
+38 224
+40 1
+41 54
+42 55
+43 143
+43 143
+43 143
+44 61
+45 22
+46 52
+48 27
+49 50
+49 50
+50 23
+51 43
+54 41
+55 66
+56 50
+57 74
+58 62
+58 62
+61 96
+63 14
+64 21
+67 1
+70 31
+71 64
+72 78
+73 43
+73 43
+74 20
+75 116
+75 116
+79 68
+80 92
+80 92
+81 121
+81 121
+81 121
+81 121
+83 53
+83 53
+84 21
+87 221
+87 221
+87 221
+88 86
+89 280
+89 280
+89 280
+89 280
+89 280
+89 280
+90 50
+91 12
+94 32
+94 32
+97 57
+98 94
+100 -1905370947

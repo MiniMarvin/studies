@@ -1,0 +1,140 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct{
+    
+    int x;
+    int y;
+    
+} parOrdenado;
+
+void printMapa(char** mapa, int coluna, int linha) {
+    
+    int i;
+    
+    for(i = 0; i < coluna; i++) {
+        
+        printf("%2s\n", mapa[i]);
+    }
+    
+    
+}
+
+
+void ataqueInimigos(char** mapa, int coluna, int linha) {
+    
+    int i, j, nInimigos = 0, nTorres = 0;
+
+    int qtdTorres = 0, qtdInimigos = 0;
+    
+    parOrdenado inimigos[100];
+    parOrdenado torres[100];
+    
+    for(i = 0; i < coluna; i++) {
+           
+            for(j = 0; j < linha; j++) {
+                
+                if(mapa[i][j] == '.') continue;
+                
+                else if(mapa[i][j] == '*') {
+                    inimigos[qtdInimigos].x = i;
+                    inimigos[qtdInimigos].y = j;
+                    qtdInimigos++;
+                }
+                
+                else if(mapa[i][j] == '&') {
+                    torres[qtdTorres].x = i;
+                    torres[qtdTorres].y = j;
+                    qtdTorres++;
+                }
+            }
+    }
+    
+    printf("Inimigos: %d Torres: %d\n", qtdInimigos, qtdTorres);
+    
+    printf("Torres -> X: %d Y: %d\n", torres[0].x, torres[0].y);
+    
+    int isXok = 0, isYok = 0, aux2 = 0, aux3 = 0, x, y;
+    
+    if(qtdTorres > qtdInimigos) aux2 = qtdTorres;
+    else aux2 = qtdInimigos;
+    
+    for(i = 0; i < qtdTorres; i++) {
+        
+        
+        for(j = 0; j < qtdInimigos; j++) {
+        
+            x = torres[i].x;
+            y = torres[i].y;
+        
+            if(x > inimigos[j].x) {
+                x--;
+                if(x == inimigos[j].x) isXok = 1;
+                else isXok = 0;
+                x = torres[i].x;
+            } else if(x < inimigos[j].x) {
+                
+                x++;
+                if(x == inimigos[j].x) isXok = 1;
+                else isXok = 0;
+            }
+            
+            if(y > inimigos[j].y) {
+                y--;
+                if(y == inimigos[j].y) isYok = 1;
+                else isYok = 0;
+                y = torres[i].y;
+            } else if(y < inimigos[j].y) {
+                y++;
+                if(y == inimigos[j].y) isYok = 1;
+                else isYok = 0;
+            }
+            
+        }
+        
+        
+    }
+    
+    if(isXok && isYok) printf("S\n");
+    else printf("N\n");
+    
+}
+
+int main() {
+        
+    char** string = NULL;
+    
+    int linha, coluna, i;
+    
+    scanf("%d %d", &linha, &coluna);
+    
+    printf("Linha: %d, Coluna: %d\n", linha, coluna);
+    
+    string = (char**) malloc((coluna + 1)*sizeof(char*));
+    
+    for(i = 0; i < coluna; i++) {
+        
+        *(string + i) = (char*) malloc((linha)*sizeof(char));
+        
+    }
+    
+    for(i = 0; i < linha; i++) {
+        printf("%2d", i);
+        scanf(" %30s", string[i]);
+    }
+    printf("\n");
+    
+    printMapa(string, coluna, linha);
+    
+    ataqueInimigos(string, coluna, linha);
+    
+    for (i = 0; i < coluna; ++i) {
+ 		free( *(string+i) );
+ 	}
+
+    free(string);
+    
+    string = NULL;
+    
+    return 0;
+}
