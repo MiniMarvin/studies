@@ -1,4 +1,5 @@
 //TODO: Rever todo o algoritmo.
+//obs: o id do produto pode ser negativo.
 
 #include <stdio.h>
 
