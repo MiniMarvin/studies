@@ -32,12 +32,6 @@ int main(int argc, char const *argv[]) {
 				}
 				break;
 			case 'r':
-				
-				if (mct == 0) mct = 1;
-				else {
-					printf("\n");
-				}
-
 				scanf(" %d", &ask);
 				found = 0;
 				for (i = 0; i < ct; ++i) {
@@ -47,20 +41,16 @@ int main(int argc, char const *argv[]) {
 					}
 				}
 				if(found == 1) {
-					swap(&list[i], &list[ct-1]); //remove o elemento pondo ele no fim do range útil do array.
 					ct--;
-					// printf("removido\n");
-					printf("removido");
+	    			//vai trocando a posição deles até chegar ao ultimo.
+	    			for (i; i < ct; ++i) {
+	    				swap(&list[i], &list[i+1]);
+	    			}
+					printf("removido\n");
 				}
-				// else printf("falha\n");
-				else printf("falha");
+				else printf("falha\n");
 				break;
 			case 'p':
-				if (mct == 0) mct = 1;
-				else {
-					printf("\n");
-				}
-
 				printLine(list, ct);
 		}
 	}
@@ -71,14 +61,12 @@ int main(int argc, char const *argv[]) {
 void printLine(int line[], int size) {
 	int i;
 	if(size == 0) {
-		// printf("vazia\n");
-		printf("vazia");
+		printf("vazia\n");
 		return;
 	}
 
 	for (i = 0; i < size-1; ++i) {
 		printf("%d ", line[i]);
 	}
-	// printf("%d\n", line[i]);
-	printf("%d", line[i]);
+	printf("%d\n", line[i]);
 }
