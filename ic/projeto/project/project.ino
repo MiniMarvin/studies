@@ -14,9 +14,11 @@
 // Todos esses pinos são PWM para poder controlar a potência do motor. (poderia ser usada uma abordagem com
 // manipulação de tensão para economizar os pinos PWM).
 #define HB1  3
-#define HB2  5
-#define HB3  6
-#define HB4  9 
+#define HB2  4
+#define HB3  5
+#define HB4  6 
+#define SP1  9 
+#define SP2  10 
 
 int moveSide = 0; ///< 0 - move left.
                   ///< 1 - move right.
@@ -58,7 +60,7 @@ void loop() {
 
 void forwardSide(int side) {
 	if(side == 1) 
-		forwardRiht();
+		forwardRight();
 	else if(side == 0)
 		forwardLeft();
 }
@@ -66,33 +68,33 @@ void forwardSide(int side) {
 /**
  * @brief      Move o motor para frente porém desviando para a esquerda.
  */
-void forwardLeft() {
-	spinA_H(255);
-	spinB_H(255*0.4);
+void backwardLeft() {
+	spinA_AH(255*0.5);
+	spinB_H(255*0.1);
 }
 
 /**
  * @brief      Move o motor para frente porém desviando para a direita.
  */
-void forwardRiht() {
-	spinA_H(255*0.4);
-	spinB_H(255);
+void backwardRight() {
+	spinA_H(255*0.1);
+	spinB_AH(255*0.5);
 }
 
 /**
  * @brief      Move o motor para trás porém desviando para a esquerda.
  */
-void backwardLeft() {
-	spinA_AH(255*0.4);
-	spinB_AH(255);
+void forwardLeft() {
+	spinA_AH(255*0.1);
+	spinB_H(255*0.5);
 }
 
 /**
  * @brief      Move o motor para trás porém desviando para a direita.
  */
-void backwardRight() {
-	spinA_AH(255);
-	spinB_AH(255*0.4);
+void forwardRight() {
+	spinA_AH(255*0.5);
+	spinB_H(255*0.1);
 }
 
 /**
@@ -100,9 +102,10 @@ void backwardRight() {
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinA_H(int eficiency) {
+void spinA_AH(int eficiency) {
 	//Gira o Motor A no sentido horario
-	analogWrite(HB1, eficiency);
+	analogWrite(SP1, eficiency);
+	digitalWrite(HB1, HIGH);
 	digitalWrite(HB2, LOW);
 }
 
@@ -111,10 +114,11 @@ void spinA_H(int eficiency) {
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinA_AH(int eficiency) {
+void spinA_H(int eficiency) {
 	//Gira o Motor A no sentido anti-horario
+	analogWrite(SP1, eficiency);
 	digitalWrite(HB1, LOW);
-	analogWrite(HB2, eficiency);
+	digitalWrite(HB2, HIGH);
 }
 
 /**
@@ -122,8 +126,9 @@ void spinA_AH(int eficiency) {
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinB_H(int eficiency) {
-	analogWrite(HB3, eficiency);
+void spinB_AH(int eficiency) {
+	analogWrite(SP2, eficiency);
+	digitalWrite(HB3, HIGH);
 	digitalWrite(HB4, LOW);
 }
 
@@ -132,16 +137,17 @@ void spinB_H(int eficiency) {
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinB_AH(int eficiency) {
+void spinB_H(int eficiency) {
+	analogWrite(SP2, eficiency);
 	digitalWrite(HB3, LOW);
-	analogWrite(HB4, eficiency);
+	digitalWrite(HB4, HIGH);
 }
 
 /**
  * @brief      Gera uma frenagem magnética nos motores.
  */
 void stop() {
-	//Para os motores A e B com uma frenagem eletromagnética.
+	// Para os motores A e B com uma frenagem eletromagnética.
 	digitalWrite(HB1, HIGH);
 	digitalWrite(HB2, HIGH);
 	digitalWrite(HB3, HIGH);
@@ -149,9 +155,13 @@ void stop() {
 
 	delay(10);
 
-	//Libera a trava eletromagnética para evitar problemas com consumo de corrente.
+	// Libera a trava eletromagnética para evitar problemas com consumo de corrente.
 	digitalWrite(HB1, LOW);
 	digitalWrite(HB2, LOW);
 	digitalWrite(HB3, LOW);
 	digitalWrite(HB4, LOW);
+
+	// Força velocidade 0 de chaveamento no motor.
+	analogWrite(SP1, 0);
+	analogWrite(SP2, 0);
 }
