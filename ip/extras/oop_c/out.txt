@@ -1,0 +1,9 @@
+Name: Caio Moreira Gomes
+CPF: 12345678900
+Money: 134.500000
+Name: Thiago Augusto
+CPF: 00123456789
+Money: 837.000000
+Name: João Gabriel
+CPF: 75614041890
+Money: 837.000000

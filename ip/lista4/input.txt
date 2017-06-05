@@ -1,0 +1,5 @@
+Within software engineering, programming (the implementation)
+is regarded as one phase in a software development process.
+There is an ongoing debate on the extent to which the writing
+of programs is an art, a craft or an engineering discipline.
+the end!
