@@ -7,10 +7,14 @@
  * Place: CIn, UPFE - Recife, Brasil
  */
 
-#define opticPin 11 //pino de entrada no sensor
-#define btn_Start 2
+#include <Ultrasonic.h>
 
-#define readLine digitalRead(opticPin)
+#define opticPin 11 //pino de entrada no sensor
+#define readLine digitalRead(opticPin)	///< 0 -> dentro da linha
+										///< 1 -> fora da linhas
+
+#define INSIDE_LINE 0
+#define OUTSIDE_LINE 1
 
 // Definicoes pinos Galileo ligados a entrada da Ponte H (Half Bridge)
 // Todos esses pinos são PWM para poder controlar a potência do motor. (poderia ser usada uma abordagem com
@@ -25,16 +29,19 @@
 #define ledVerde 12
 #define ledVermelho 13
 
+#define echo 8
+#define trigger 9
+
+#define N 10
+
 int moveSide = 0; ///< 0 - move left.
                   ///< 1 - move right.
 
-int start = 0;
+int lineState = INSIDE_LINE;
+int oldState = INSIDE_LINE;
+int stct = 0;
 
-unsigned long currentMillis;
-unsigned long previousMillis = 0;
-unsigned long delayMS = 75;
-
-bool side = 0;
+Ultrasonic ultrasonic(trigger, echo);
 
 void setup() {
 	Serial.begin(9600); //inicializando a porta serial
@@ -50,58 +57,97 @@ void setup() {
 	pinMode(ledVermelho, OUTPUT);	//vermelho
 
 	// Inicia o robô com ele virado para a direita da linha e gira para a esquerda até encontrar a linha.
-	
-	// while(!checkButtonState(btn_Start));
-	// start = 1;
 	while(readLine == 0) {
 		forwardSide(moveSide);
 	}
 	moveSide ^= 1;
+	Serial.begin(9600);
 
 }
  
 void loop() {
+
+
 	
+	while(readLine == OUTSIDE_LINE) {
+		// obstaculo();
+		forwardSide(moveSide);
+	}
 
-	// if(checkButtonState(btn_Start)) {
-	// 	start ^= start;
+	// Saiu da linha então inverte o sentido		
+	// Continua nesse sentido até encontrar a linha
+	while(readLine == INSIDE_LINE) {
+		// obstaculo();
+	    forwardSide(moveSide);
+	}
+
+	moveSide ^= 1;
+
+	// Se estava na linha e saiu ele inverte o sentido
+	// Se estava fora da linha e entrou só continua
+
+	// if(oldState == INSIDE_LINE && readLine == OUTSIDE_LINE) {
+	// 	moveSide ^= 1;
+	// 	oldState = OUTSIDE_LINE;
+	// }
+	// if(oldState == OUTSIDE_LINE && readLine == INSIDE_LINE) {
+	// 	oldState = INSIDE_LINE;
 	// }
 
-	// if(start) {
-		// Uma vez que a linha foi encontrada segue o fluxo para o sentido que estava indo 
-		// anteriormente até sair da linha.
-		while(readLine == 1) {
-			forwardSide(moveSide);
-			currentMillis = millis();
-		}
+	// forwardSide(moveSide);
 
-		// Saiu da linha então inverte o sentido
-		
-
-		
-
-		// if((currentMillis - previousMillis) > delayMS) {
-		// 	previousMillis = currentMillis;
-		// 	moveSide ^= 1;	
-		// }
-		
-		
-		// Continua nesse sentido até encontrar a linha
-		while(readLine == 0) {
-		    forwardSide(moveSide);
-		    currentMillis = millis();
-		}
-
-		moveSide ^= 1;	
-
-		// if((currentMillis - previousMillis) > delayMS) {
-		// 	previousMillis = currentMillis;
-		// 	moveSide ^= 1;	
-		// }
-		
-	// }
 }
 
+// TODO: mudar o nome da função.
+void obstaculo() {
+	int last_distance = ultrasonic.Ranging(CM);
+	int diff = 0;
+	int MAX_DIST = 4;
+
+	if(last_distance < 20) {
+
+		Serial.print("Distance: ");
+		Serial.println(last_distance);
+		while( diff < MAX_DIST ) {
+			forwardSide(moveSide);
+			diff = ultrasonic.Ranging(CM) - last_distance;
+			Serial.print("Diff:");
+			Serial.println(diff);
+
+			last_distance = ultrasonic.Ranging(CM);
+			Serial.print("last_distance: ");
+			Serial.println(last_distance);
+		}
+		stop();
+		Serial.print("STOP!!");
+		delay(500);
+
+		forwardPoweredSide(moveSide, 0.25, 0.4);
+		delay(200);
+
+		moveSide ^= 1;
+
+		forwardPoweredSide(moveSide, 0.25, 0.4);
+		delay(250);
+		
+		// while(readLine == OUTSIDE_LINE);
+
+		// for (int i = 0; i < 5; ++i){
+		// 	forwardSide(moveSide);
+		// 	delay(50);
+		// }
+
+		// moveSide ^= 1;
+
+		// for (int i = 0; i < 5; ++i){
+		// 	forwardSide(moveSide);
+		// 	delay(100);
+		// }			
+
+		// moveSide ^= 1;
+	}
+
+}
 
 void forwardSide(int side) {
 	if(side == 1) {
@@ -116,21 +162,24 @@ void forwardSide(int side) {
 	}
 }
 
-/**
- * @brief      Move o motor para frente porém desviando para a esquerda.
- */
-void backwardLeft() {
-	//0.27
-	spinA_AH(255*0.4);
-	spinB_H(255*0);
+//para obter um giro para esquerda eff_a > eff_b
+void forwardPoweredSide(int side, float eff_a, float eff_b) {
+	if(side == 1) {
+		forwardPowered(eff_b, eff_a);
+		digitalWrite(ledVermelho, HIGH);
+		digitalWrite(ledVerde, LOW);
+	}
+	else if(side == 0) {
+		forwardPowered(eff_a, eff_b);
+		digitalWrite(ledVerde, HIGH);
+		digitalWrite(ledVermelho, LOW);
+	}
+
 }
 
-/**
- * @brief      Move25o motor para frente porém desviando para a direita.
- */
-void backwardRight() {
-	spinA_H(255*0);
-	spinB_AH(255*0.4);
+void forwardPowered(float eff1, float eff2) {
+	spinA_AH(255*eff1);
+	spinB_H(255*eff2);	
 }
 
 /**
@@ -138,14 +187,14 @@ void backwardRight() {
  */
 void forwardLeft() {
 	spinA_AH(255*0);
-	spinB_H(255*0.4);
+	spinB_H(255*0.3);
 }
 
 /**
  * @brief      Move o motor para trás porém desviando para a direita.
  */
 void forwardRight() {
-	spinA_AH(255*0.4);
+	spinA_AH(255*0.3);
 	spinB_H(255*0);
 }
 
@@ -219,14 +268,19 @@ void stop() {
 }
 
 
-int checkButtonState(int button){
-  //Source: Arduino, modified by: KilnerJhow
-  // read the state of the switch into a local variable:
-  int reading = digitalRead(button);
-  delay(50);
-  reading = digitalRead(button);
-  if(reading) {
-    return 1;
-  }
-  return 0;
+long getDistance(){
+  
+  //get duration and distance
+  long duration, distance;
+  digitalWrite(trigger, LOW);
+  delayMicroseconds(2); 
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigger, LOW);
+  duration = pulseIn(echo, HIGH);
+  distance = (duration/2) / 29.1;
+  
+  //filter
+  
+  return distance;
 }
