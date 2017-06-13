@@ -37,6 +37,8 @@
 int moveSide = 0; ///< 0 - move left.
                   ///< 1 - move right.
 
+int mstate = 0;
+
 int lineState = INSIDE_LINE;
 int oldState = INSIDE_LINE;
 int stct = 0;
@@ -69,17 +71,21 @@ void loop() {
 
 
 	
-	while(readLine == OUTSIDE_LINE) {
-		// obstaculo();
+	while(readLine == OUTSIDE_LINE && mstate == 0) {
+		obstaculo();
 		forwardSide(moveSide);
 	}
 
+	mstate = 1;
+
 	// Saiu da linha então inverte o sentido		
 	// Continua nesse sentido até encontrar a linha
-	while(readLine == INSIDE_LINE) {
-		// obstaculo();
+	while(readLine == INSIDE_LINE && mstate == 1) {
+		obstaculo();
 	    forwardSide(moveSide);
 	}
+
+	mstate = 0;
 
 	moveSide ^= 1;
 
@@ -106,6 +112,8 @@ void obstaculo() {
 
 	if(last_distance < 20) {
 
+		int spinct = 0;
+
 		Serial.print("Distance: ");
 		Serial.println(last_distance);
 		while( diff < MAX_DIST ) {
@@ -117,18 +125,91 @@ void obstaculo() {
 			last_distance = ultrasonic.Ranging(CM);
 			Serial.print("last_distance: ");
 			Serial.println(last_distance);
+			spinct++;
 		}
+
 		stop();
 		Serial.print("STOP!!");
 		delay(500);
 
-		forwardPoweredSide(moveSide, 0.25, 0.4);
-		delay(200);
+		// move para longe do obstáculo
+		forwardPoweredSide(moveSide, 0.4, 0.7);
+		delay(350);
+
+		stop();
+		Serial.print("STOP!!");
+		delay(500);
 
 		moveSide ^= 1;
 
-		forwardPoweredSide(moveSide, 0.25, 0.4);
-		delay(250);
+		// gira de volta.
+		forwardPoweredSide(moveSide, 0, 0.7);
+		delay(300);
+
+		stop();
+		Serial.print("STOP!!");
+		delay(500);		
+
+		// move um pouco mais para frente
+		forwardPoweredSide(moveSide, 0.6, 0.6);
+		delay(70);
+
+		stop();
+		Serial.print("STOP!!");
+		delay(500);	
+
+		// reencontra o objeto
+		while( ultrasonic.Ranging(CM) > 25 ) {
+			forwardSide(moveSide);
+		}
+
+		stop();
+		Serial.print("STOP!!");
+		delay(500);		
+
+		moveSide ^= 1;
+
+		// gira de volta.
+		// sai de perto do objeto
+		while( ultrasonic.Ranging(CM) < 25 ) {
+			forwardSide(moveSide);
+		}
+
+		// vai um pouco mais por precaução
+		forwardSide(moveSide);
+		delay(50);
+
+		//gira até reencontrar a pista
+		while(readLine != INSIDE_LINE) {
+			forwardPoweredSide(moveSide, 0.2, 0.4);
+		}
+
+		//encontrou a pista então para.
+		stop();
+		Serial.print("STOP!!");
+		delay(500);
+
+
+
+		// stop();
+		// Serial.print("STOP!!");
+		// delay(500);
+
+		// forwardPoweredSide(moveSide, 0.35, 0.7);
+		// delay(500);
+
+		// stop();
+		// Serial.print("STOP!!");
+		// delay(500);
+
+		// TODO: modificar isso para fazer uma máquina de estados real
+		// e não uma adaptação técnica da relação com whiles
+		// pois se mstate for 1 ele vai girar o sentido quando voltar
+		// para o loop principal, então inverte logo para quando chegar
+		// lá voltar ao normal.
+		if(mstate == 1) {
+			moveSide ^= 1;
+		}
 		
 		// while(readLine == OUTSIDE_LINE);
 
@@ -267,20 +348,3 @@ void stop() {
 	analogWrite(SP2, 0);
 }
 
-
-long getDistance(){
-  
-  //get duration and distance
-  long duration, distance;
-  digitalWrite(trigger, LOW);
-  delayMicroseconds(2); 
-  digitalWrite(trigger, HIGH);
-  delayMicroseconds(10); 
-  digitalWrite(trigger, LOW);
-  duration = pulseIn(echo, HIGH);
-  distance = (duration/2) / 29.1;
-  
-  //filter
-  
-  return distance;
-}
