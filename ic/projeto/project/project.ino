@@ -114,6 +114,7 @@ void obstaculo() {
 
 		int spinct = 0;
 
+		// Gira até encontrar o fim do obstáculo.
 		Serial.print("Distance: ");
 		Serial.println(last_distance);
 		while( diff < MAX_DIST ) {
@@ -128,45 +129,47 @@ void obstaculo() {
 			spinct++;
 		}
 
+		// Gira um pouco mais para garantir que não vai bater no obstáculo.
+		forwardSide(moveSide);
+		delay(100);
+
+		// Para para indicar o fim do bloco de processamento.
 		stop();
 		Serial.print("STOP!!");
+		delay(1000);
+
+		// Move no sentido da borda encontrada do obstáculo.
+		forwardPoweredSide(moveSide, 0.5, 0.6);
+		// delay(350);
 		delay(500);
 
-		// move para longe do obstáculo
-		forwardPoweredSide(moveSide, 0.4, 0.7);
-		delay(350);
-
+		// Para para indicar o fim do bloco de processamento.
 		stop();
 		Serial.print("STOP!!");
-		delay(500);
+		delay(1000);
 
+		// Indica que agora ele precisa girar no sentido oposto.
 		moveSide ^= 1;
 
-		// gira de volta.
-		forwardPoweredSide(moveSide, 0, 0.7);
-		delay(300);
+		// // gira de volta.
+		// forwardPoweredSide(moveSide, 0, 0.7);
+		// delay(300);
 
-		stop();
-		Serial.print("STOP!!");
-		delay(500);		
+		// stop();
+		// Serial.print("STOP!!");
+		// delay(1000);		
 
-		// move um pouco mais para frente
-		forwardPoweredSide(moveSide, 0.6, 0.6);
-		delay(70);
-
-		stop();
-		Serial.print("STOP!!");
-		delay(500);	
-
-		// reencontra o objeto
+		// Reencontra o objeto
 		while( ultrasonic.Ranging(CM) > 25 ) {
 			forwardSide(moveSide);
 		}
 
+		// Para para indicar o fim do bloco de processamento.
 		stop();
 		Serial.print("STOP!!");
-		delay(500);		
+		delay(1000);
 
+		// Inverte novamente o sentido de rotação
 		moveSide ^= 1;
 
 		// gira de volta.
@@ -177,30 +180,22 @@ void obstaculo() {
 
 		// vai um pouco mais por precaução
 		forwardSide(moveSide);
-		delay(50);
+		delay(100);
 
-		//gira até reencontrar a pista
+		// Para para indicar o fim do bloco de processamento.
+		stop();
+		Serial.print("STOP!!");
+		delay(1000);
+
+		// Gira até reencontrar a pista
 		while(readLine != INSIDE_LINE) {
-			forwardPoweredSide(moveSide, 0.2, 0.4);
+			forwardPoweredSide(moveSide, 0.4, 0.6);
 		}
 
 		//encontrou a pista então para.
 		stop();
 		Serial.print("STOP!!");
 		delay(500);
-
-
-
-		// stop();
-		// Serial.print("STOP!!");
-		// delay(500);
-
-		// forwardPoweredSide(moveSide, 0.35, 0.7);
-		// delay(500);
-
-		// stop();
-		// Serial.print("STOP!!");
-		// delay(500);
 
 		// TODO: modificar isso para fazer uma máquina de estados real
 		// e não uma adaptação técnica da relação com whiles
@@ -210,22 +205,6 @@ void obstaculo() {
 		if(mstate == 1) {
 			moveSide ^= 1;
 		}
-		
-		// while(readLine == OUTSIDE_LINE);
-
-		// for (int i = 0; i < 5; ++i){
-		// 	forwardSide(moveSide);
-		// 	delay(50);
-		// }
-
-		// moveSide ^= 1;
-
-		// for (int i = 0; i < 5; ++i){
-		// 	forwardSide(moveSide);
-		// 	delay(100);
-		// }			
-
-		// moveSide ^= 1;
 	}
 
 }
