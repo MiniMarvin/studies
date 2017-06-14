@@ -29,8 +29,8 @@
 #define ledVerde 12
 #define ledVermelho 13
 
-#define echo 8
-#define trigger 9
+#define echo 9
+#define trigger 10
 
 #define N 10
 
@@ -42,6 +42,7 @@ int mstate = 0;
 int lineState = INSIDE_LINE;
 int oldState = INSIDE_LINE;
 int stct = 0;
+int cttogo = 0, oldct = 0, buff_diff = 0;
 
 Ultrasonic ultrasonic(trigger, echo);
 
@@ -68,8 +69,6 @@ void setup() {
 }
  
 void loop() {
-
-
 	
 	while(readLine == OUTSIDE_LINE && mstate == 0) {
 		obstaculo();
@@ -107,10 +106,19 @@ void loop() {
 // TODO: mudar o nome da função.
 void obstaculo() {
 	int last_distance = ultrasonic.Ranging(CM);
+	// int last_distance = getDistance();
 	int diff = 0;
 	int MAX_DIST = 4;
 
+	Serial.println(last_distance);
 	if(last_distance < 20) {
+		cttogo++;
+	}
+	else {
+		cttogo = 0;
+	}
+	// if(last_distance < 20) {
+	if(cttogo == 4){
 
 		int spinct = 0;
 
@@ -118,15 +126,36 @@ void obstaculo() {
 		Serial.print("Distance: ");
 		Serial.println(last_distance);
 		while( diff < MAX_DIST ) {
+		// while( cttogo < 4 ) {
 			forwardSide(moveSide);
-			diff = ultrasonic.Ranging(CM) - last_distance;
+			//update only if the read is different.
+			// if(oldct == 0) {
+			// 	diff = ultrasonic.Ranging(CM) - last_distance;
+			// 	oldct = 1;
+			// }
+			diff = getDistance() - last_distance;
 			Serial.print("Diff:");
 			Serial.println(diff);
 
 			last_distance = ultrasonic.Ranging(CM);
+			// last_distance = getDistance();
 			Serial.print("last_distance: ");
 			Serial.println(last_distance);
 			spinct++;
+
+			// // debug por várias leituras.
+			// if( diff > MAX_DIST ) {
+			// 	oldct = 1;
+			// }
+			// else{
+			// 	oldct = 0;
+			// }
+			// if(oldct == 1) {
+			// 	cttogo++;
+			// }
+			// else {
+			// 	cttogo = 0;
+			// }
 		}
 
 		// Gira um pouco mais para garantir que não vai bater no obstáculo.
@@ -139,9 +168,14 @@ void obstaculo() {
 		delay(1000);
 
 		// Move no sentido da borda encontrada do obstáculo.
-		forwardPoweredSide(moveSide, 0.5, 0.6);
+		forwardPoweredSide(moveSide, 0.45, 0.35);
 		// delay(350);
-		delay(500);
+		delay(400);
+
+		// Move no sentido da borda encontrada do obstáculo.
+		forwardPoweredSide(moveSide, 0.45, 0.35);
+		// delay(350);
+		delay(100);
 
 		// Para para indicar o fim do bloco de processamento.
 		stop();
@@ -161,6 +195,7 @@ void obstaculo() {
 
 		// Reencontra o objeto
 		while( ultrasonic.Ranging(CM) > 25 ) {
+		// while( getDistance() > 25 ) {
 			forwardSide(moveSide);
 		}
 
@@ -175,12 +210,13 @@ void obstaculo() {
 		// gira de volta.
 		// sai de perto do objeto
 		while( ultrasonic.Ranging(CM) < 25 ) {
+		// while( getDistance() < 25 ) {
 			forwardSide(moveSide);
 		}
 
 		// vai um pouco mais por precaução
 		forwardSide(moveSide);
-		delay(100);
+		delay(300);
 
 		// Para para indicar o fim do bloco de processamento.
 		stop();
@@ -189,7 +225,7 @@ void obstaculo() {
 
 		// Gira até reencontrar a pista
 		while(readLine != INSIDE_LINE) {
-			forwardPoweredSide(moveSide, 0.4, 0.6);
+			forwardPoweredSide(moveSide, 0.6, 0.3);
 		}
 
 		//encontrou a pista então para.
@@ -327,3 +363,19 @@ void stop() {
 	analogWrite(SP2, 0);
 }
 
+long getDistance(){
+  
+  //get duration and distance
+  long duration, distance;
+  digitalWrite(trigger, LOW);
+  delayMicroseconds(2); 
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigger, LOW);
+  duration = pulseIn(echo, HIGH);
+  distance = (duration/2) / 29.1;
+  
+  //filter
+  
+  return distance;
+}
