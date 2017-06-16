@@ -34,12 +34,15 @@
 #define TRIGGER_PIN 10
 #define MAX_DISTANCE 200
 
+#define MIN_DIST 20
+#define MAX_DIFF
+
 #define N 10
 
 #define LEFT 0
 #define RIGHT 1
 
-#define NUMER_LEITURAS
+#define NUMERO_LEITURAS 3
 
 int moveSide = 0; ///< 0 - move left.
                   ///< 1 - move right.
@@ -52,8 +55,10 @@ int oldState = INSIDE_LINE;
 int stct = 0;
 int cttogo = 0, oldct = 0, buff_diff = 0;
 
-int dist_array[NUMER_LEITURAS];
+int dist_array[NUMERO_LEITURAS];
 int count_dist = 0;
+
+int distancia_atual = 1000;
 
 // Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
@@ -74,7 +79,7 @@ void setup() {
 	Serial.begin(9600);
 
 	// Inicia o array de leituras de sensor
-	for(i = 0; i < NUMER_LEITURAS; i++) {
+	for(i = 0; i < NUMERO_LEITURAS; i++) {
 		dist_array[i] = sonar.ping_cm();
 		delay(50);
 	}
@@ -82,40 +87,77 @@ void setup() {
  
 void loop() {
 	
+	// pega a distancia atual com a média móvel
+	distancia_atual =(int) getDistance();
+	
 	// Estado dentro da linha indo para a esquerda
 	if(mstate == 0) {
 		moveSide = LEFT;
 		forwardSide(moveSide);
+		
+		if(readLine == OUTSIDE_LINE) {
+			mstate = 1;
+		}
+		
+		if() {
+			
+		}
 	}
 	// Estado a esquerda da linha
 	else if(mstate == 1) {
 		moveSide = RIGHT;
 		forwardSide(moveSide);
+		
+		if(readLine == INSIDE_LINE) {
+			mstate = 2;
+		}
 	}
 	// Estado dentro da linha indo para a direita
 	else if(mstate == 2) {
 		moveSide = RIGHT;
 		forwardSide(moveSide);
+		
+		if(readLine == OUTSIDE_LINE) {
+			mstate = 3;
+		}
 	}
 	// Estado a direita da linha
 	else if(mstate == 3) {
 		moveSide = LEFT;
 		forwardSide(moveSide);
+		
+		if(readLine == INSIDE_LINE) {
+			mstate = 0;
+		}
 	}
 	// Desviando do obstáculo
-	else if(state == 4) {
-		desvia_obstaculo();
+	else if(mstate == 4) {
+		acha_limite();
 	}
 	
-	if(count_dist == 3) {
-		
+	else if(mstate == 5) {
+		passa_obstaculo();
+	}
+	
+	// Reseta o número de leituras.
+	if(count_dist == NUMERO_LEITURAS) {
+		count_dist = 0;
 	}
 	
 }
 
-void desvia_obstaculo() {
+void acha_limite() {
+	// achou os limites do obstáculo
+	if(distancia_atual > MIN_DIST + MAX_DIFF) {
+		mstate = 5;
+		stop();
+	}
 	
+	else {
+		forwardSide(moveSide);
+	}
 }
+
 
 // TODO: mudar o nome da função.
 void obstaculo() {
@@ -140,36 +182,15 @@ void obstaculo() {
 		Serial.print("Distance: ");
 		Serial.println(last_distance);
 		while( diff < MAX_DIST ) {
-		// while( cttogo < 4 ) {
 			forwardSide(moveSide);
-			//update only if the read is different.
-			// if(oldct == 0) {
-			// 	diff = ultrasonic.Ranging(CM) - last_distance;
-			// 	oldct = 1;
-			// }
 			diff = getDistance() - last_distance;
 			Serial.print("Diff:");
 			Serial.println(diff);
 
 			last_distance = ultrasonic.Ranging(CM);
-			// last_distance = getDistance();
 			Serial.print("last_distance: ");
 			Serial.println(last_distance);
 			spinct++;
-
-			// // debug por várias leituras.
-			// if( diff > MAX_DIST ) {
-			// 	oldct = 1;
-			// }
-			// else{
-			// 	oldct = 0;
-			// }
-			// if(oldct == 1) {
-			// 	cttogo++;
-			// }
-			// else {
-			// 	cttogo = 0;
-			// }
 		}
 
 		// Gira um pouco mais para garantir que não vai bater no obstáculo.
@@ -377,19 +398,15 @@ void stop() {
 	analogWrite(SP2, 0);
 }
 
-long getDistance(){
+// Tira a média das leituras realizadas.
+float getDistance(){
   
-  //get duration and distance
-  long duration, distance;
-  digitalWrite(TRIGGER_PIN, LOW);
-  delayMicroseconds(2); 
-  digitalWrite(TRIGGER_PIN, HIGH);
-  delayMicroseconds(10); 
-  digitalWrite(TRIGGER_PIN, LOW);
-  duration = pulseIn(ECHO_PIN, HIGH);
-  distance = (duration/2) / 29.1;
+  float distance = 0;
   
-  //filter
+  for (int i = 0; i < NUMERO_LEITURAS; i++) {
+  	distance += dist_array[i];
+  }
+  distance /= NUMERO_LEITURAS;
   
   return distance;
 }
