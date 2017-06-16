@@ -55,6 +55,8 @@ int oldState = INSIDE_LINE;
 int stct = 0;
 int cttogo = 0, oldct = 0, buff_diff = 0;
 
+int lado_no_04;
+
 int dist_array[NUMERO_LEITURAS];
 int count_dist = 0;
 
@@ -99,8 +101,8 @@ void loop() {
 			mstate = 1;
 		}
 		
-		if() {
-			
+		if(distancia_atual <= MIN_DIST) {
+			mstate = 4;
 		}
 	}
 	// Estado a esquerda da linha
@@ -111,6 +113,10 @@ void loop() {
 		if(readLine == INSIDE_LINE) {
 			mstate = 2;
 		}
+		
+		if(distancia_atual <= MIN_DIST) {
+			mstate = 4;
+		}
 	}
 	// Estado dentro da linha indo para a direita
 	else if(mstate == 2) {
@@ -119,6 +125,10 @@ void loop() {
 		
 		if(readLine == OUTSIDE_LINE) {
 			mstate = 3;
+		}
+		
+		if(distancia_atual <= MIN_DIST) {
+			mstate = 4;
 		}
 	}
 	// Estado a direita da linha
@@ -129,22 +139,50 @@ void loop() {
 		if(readLine == INSIDE_LINE) {
 			mstate = 0;
 		}
+		
+		if(distancia_atual <= MIN_DIST) {
+			mstate = 4;
+			lado_no_04 = mstate;
+		}
 	}
-	// Desviando do obstáculo
+	// Acha limite do obstáculo
 	else if(mstate == 4) {
 		acha_limite();
 	}
 	
+	// Sai de perto do obstáculo
 	else if(mstate == 5) {
 		passa_obstaculo();
+		mstate = 6
 	}
+	
+	// Reencontra o obstáculo
+	else if(mstate == 6) {
+		acha_obstaculo();
+	}
+	
+	// Sai de perto dele
+	else if(mstate == 7) {
+		sai_de_perto();
+	}
+	
+	// Reencontra a linha
+	else if(mstate == 8) {
+		acha_linha();
+	}
+	
+	// Lê o sonar
+	dist_array[count_dist++] = sonar.ping_cm();
 	
 	// Reseta o número de leituras.
 	if(count_dist == NUMERO_LEITURAS) {
 		count_dist = 0;
 	}
 	
+	delay(29);
+	
 }
+
 
 void acha_limite() {
 	// achou os limites do obstáculo
@@ -156,6 +194,55 @@ void acha_limite() {
 	else {
 		forwardSide(moveSide);
 	}
+}
+
+
+void passa_obstaculo() {
+	// Inverte o lado de movimentação
+	moveSide = (lado_no_04 == 0 ) ? 1 : 0;
+
+	// Move no sentido da borda encontrada do obstáculo.
+	forwardPoweredSide(moveSide, 0.45, 0.35);
+	// delay(350);
+	delay(400);
+}
+
+void acha_obstaculo() {
+	forwardSide();
+	if(distancia_atual <= MIN_DIST) {
+		mstate = 7;
+		stop();
+	}
+}
+
+void sai_de_perto() {
+	
+	moveSide = lado_no_04;
+	
+	forwardSide();
+	
+	if(distancia_atual >= MIN_DIST + MAX_DIFF) {
+		mstate = 8;
+		delay(100); // Vai um pouco mais
+		stop(); // Para o carrinho
+	}
+}
+
+void acha_linha() {
+	// Inverte o lado de movimentação
+	moveSide = (lado_no_04 == 0 ) ? 1 : 0;
+	
+	forwardPoweredSide(moveSide, 0.35, 0.45);
+	
+	// Volta a sair de perto do obstáculo
+	if(distancia_atual <= MIN_DIST) {
+		mstate = 7;
+	}
+	
+	if(readLine == INSIDE_LINE) {
+		mstate = 0;
+	}
+	
 }
 
 
