@@ -24,8 +24,6 @@
 #define HB2  4
 #define HB3  5
 #define HB4  6 
-// #define SP1  9 
-// #define SP2  10 
 
 #define ledVerde 12
 #define ledVermelho 13
@@ -64,9 +62,6 @@ int distancia_atual = 1000;
 
 unsigned long old_time = 0;
 
-// Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
-// NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
-
 void setup() {
 	Serial.begin(9600); //inicializando a porta serial
 	pinMode(opticPin, INPUT); //colocando a porta 11 como entrada
@@ -77,25 +72,16 @@ void setup() {
 	pinMode(HB3, OUTPUT);
 	pinMode(HB4, OUTPUT);
 
-	// pinMode(ledVerde, OUTPUT);	//verde
-	// pinMode(ledVermelho, OUTPUT);	//vermelho
-
-
-	// while(1) {
-	// 	forwardPowered(0.4, 0.4);
-	// }
-
 	pinMode(TRIGGER_PIN, OUTPUT);
 	pinMode(ECHO_PIN, INPUT);
 
-	// Serial.begin(9600);
 	Serial.begin(115200);
 
 	// Inicia o array de leituras de sensor
 	for(int i = 0; i < NUMERO_LEITURAS; i++) {
 		// dist_array[i] = sonar.ping_cm();
 		// dist_array[i] = ultrasonic.Ranging(CM);
-		dist_array[i] = PEGA_A_PORRA_DA_DISTANCIA();
+		dist_array[i] = pegaDistancia();
 		delay(50);
 	}
 
@@ -118,6 +104,7 @@ void loop() {
 			mstate = 4;
 		}
 	}
+
 	// Estado a esquerda da linha
 	else if(mstate == 1) {
 		moveSide = RIGHT;
@@ -167,15 +154,11 @@ void loop() {
 	else if(mstate == 5) {
 		passa_obstaculo();
 		mstate = 8;
-		// stop();
-		// delay(1000);
 	}
 	
 	// Reencontra o obstáculo
 	else if(mstate == 6) {
-		acha_obstaculo();
-		// mstate = 8;
-		
+		acha_obstaculo();		
 	}
 	
 	// Sai de perto dele
@@ -189,25 +172,16 @@ void loop() {
 		acha_linha();
 	}
 
-	if(distancia_atual == 0) {
-		Serial.print("Deu pau aqui ");
-		Serial.print(mstate);
-		Serial.println("!!!!");
-	}
-
+	// Delay mínimo para executar outra leitura do sensor
 	if(millis() - old_time >= 30) {
-		// Lê o sonar
-		// dist_array[count_dist] = sonar.ping_cm();
 		
-		dist_array[count_dist] = PEGA_A_PORRA_DA_DISTANCIA();
+		dist_array[count_dist] = pegaDistancia();
 
-		// dist_array[count_dist] = ultrasonic.Ranging(CM);
-		// distancia_atual = sonar.ping_cm();
 		Serial.println(distancia_atual);
-		// Serial.println(dist_array[count_dist]);
-
+	
 		Serial.print("Estado: ");
 		Serial.println(mstate);
+	
 		// Reseta o número de leituras.
 		if(++count_dist == NUMERO_LEITURAS) {
 			count_dist = 0;
@@ -216,17 +190,16 @@ void loop() {
 		// pega a distancia atual com a média móvel
 		distancia_atual = (int) getDistance();
 
-		// Serial.println(millis() - old_time);
-		// Serial.println(sonar.ping_cm());
-		
 		old_time = millis();
 	}
-	
-	// delay(29);
 	
 }
 
 unsigned long tempo_o = 0;
+
+/**
+ * @brief      Acha o limite do obstáculo e se move ao redor
+ */
 void acha_limite() {
 	// achou os limites do obstáculo
 	if(distancia_atual > (MIN_DIST + MAX_DIFF)) {
@@ -244,36 +217,25 @@ void acha_limite() {
 		forwardSide(moveSide);
 	}
 }
-
+/**
+ * @brief      Faz a rotina de desvio do obstáculo
+ */
 void passa_obstaculo() {
-	// Inverte o lado de movimentação
-	// moveSide = (lado_no_04 == 0 ) ? 1 : 0;
-	// if(lado_no_04 == 0) {
-	// 	moveSide = 1;
-	// }
-	// if(lado_no_04 == 1) {
-	// 	moveSide = 0;
-	// }
-	// moveSide = lado_no_04;
 
 	delay(50);
 
 	// Move no sentido da borda encontrada do obstáculo.
 	forwardPoweredSide(moveSide, 0.43, 0.45);
 
-	// if(millis() - tempo_o > 450) {
-	// 	mstate = 6;
-	// 	// stop();
-	// }
-	// delay(350);
 	delay(300);
 	mstate = 6;
 }
 
+/**
+ * @brief      Encontra o obstáculo e avança a máquina de estados
+ */
 void acha_obstaculo() {
-	// moveSide = (lado_no_04 == 0) ? 1 : 0;
-	// moveSide = lado_no_04;
-
+	
 	if(lado_no_04 == 0) {
 		moveSide = 1;
 	}
@@ -288,6 +250,9 @@ void acha_obstaculo() {
 	}
 }
 
+/**
+ * @brief      Sai de perto do obstáculo
+ */
 void sai_de_perto() {
 	
 	moveSide = lado_no_04;
@@ -302,6 +267,9 @@ void sai_de_perto() {
 	}
 }
 
+/**
+ * @brief      Procura a linha depois de sair da rotina de desvio
+ */
 void acha_linha() {
 	// Inverte o lado de movimentação
 	// moveSide = lado_no_04;
@@ -315,11 +283,6 @@ void acha_linha() {
 
 	forwardPoweredSide(moveSide, 0.25, 0.40);
 	
-	// Volta a sair de perto do obstáculo
-	// if(distancia_atual <= MIN_DIST) {
-	// 	mstate = 7;
-	// }
-	
 	if(readLine == INSIDE_LINE) {
 		// mstate = 0;
 		if(lado_no_04 == RIGHT) {
@@ -332,128 +295,11 @@ void acha_linha() {
 	
 }
 
-
-// // TODO: mudar o nome da função.
-// void obstaculo() {
-// 	int last_distance = ultrasonic.Ranging(CM);
-// 	// int last_distance = getDistance();
-// 	int diff = 0;
-// 	int MAX_DIST = 4;
-
-// 	Serial.println(last_distance);
-// 	if(last_distance < 20) {
-// 		cttogo++;
-// 	}
-// 	else {
-// 		cttogo = 0;
-// 	}
-// 	// if(last_distance < 20) {
-// 	if(cttogo == 4){
-
-// 		int spinct = 0;
-
-// 		// Gira até encontrar o fim do obstáculo.
-// 		Serial.print("Distance: ");
-// 		Serial.println(last_distance);
-// 		while( diff < MAX_DIST ) {
-// 			forwardSide(moveSide);
-// 			diff = getDistance() - last_distance;
-// 			Serial.print("Diff:");
-// 			Serial.println(diff);
-
-// 			last_distance = ultrasonic.Ranging(CM);
-// 			Serial.print("last_distance: ");
-// 			Serial.println(last_distance);
-// 			spinct++;
-// 		}
-
-// 		// Gira um pouco mais para garantir que não vai bater no obstáculo.
-// 		forwardSide(moveSide);
-// 		delay(100);
-
-// 		// Para para indicar o fim do bloco de processamento.
-// 		stop();
-// 		Serial.print("STOP!!");
-// 		delay(1000);
-
-// 		// Move no sentido da borda encontrada do obstáculo.
-// 		forwardPoweredSide(moveSide, 0.45, 0.35);
-// 		// delay(350);
-// 		delay(400);
-
-// 		// Move no sentido da borda encontrada do obstáculo.
-// 		forwardPoweredSide(moveSide, 0.45, 0.35);
-// 		// delay(350);
-// 		delay(100);
-
-// 		// Para para indicar o fim do bloco de processamento.
-// 		stop();
-// 		Serial.print("STOP!!");
-// 		delay(1000);
-
-// 		// Indica que agora ele precisa girar no sentido oposto.
-// 		moveSide ^= 1;
-
-// 		// // gira de volta.
-// 		// forwardPoweredSide(moveSide, 0, 0.7);
-// 		// delay(300);
-
-// 		// stop();
-// 		// Serial.print("STOP!!");
-// 		// delay(1000);		
-
-// 		// Reencontra o objeto
-// 		while( ultrasonic.Ranging(CM) > 25 ) {
-// 		// while( getDistance() > 25 ) {
-// 			forwardSide(moveSide);
-// 		}
-
-// 		// Para para indicar o fim do bloco de processamento.
-// 		stop();
-// 		Serial.print("STOP!!");
-// 		delay(1000);
-
-// 		// Inverte novamente o sentido de rotação
-// 		moveSide ^= 1;
-
-// 		// gira de volta.
-// 		// sai de perto do objeto
-// 		while( ultrasonic.Ranging(CM) < 25 ) {
-// 		// while( getDistance() < 25 ) {
-// 			forwardSide(moveSide);
-// 		}
-
-// 		// vai um pouco mais por precaução
-// 		forwardSide(moveSide);
-// 		delay(300);
-
-// 		// Para para indicar o fim do bloco de processamento.
-// 		stop();
-// 		Serial.print("STOP!!");
-// 		delay(1000);
-
-// 		// Gira até reencontrar a pista
-// 		while(readLine != INSIDE_LINE) {
-// 			forwardPoweredSide(moveSide, 0.6, 0.3);
-// 		}
-
-// 		//encontrou a pista então para.
-// 		stop();
-// 		Serial.print("STOP!!");
-// 		delay(500);
-
-// 		// TODO: modificar isso para fazer uma máquina de estados real
-// 		// e não uma adaptação técnica da relação com whiles
-// 		// pois se mstate for 1 ele vai girar o sentido quando voltar
-// 		// para o loop principal, então inverte logo para quando chegar
-// 		// lá voltar ao normal.
-// 		if(mstate == 1) {
-// 			moveSide ^= 1;
-// 		}
-// 	}
-
-// }
-
+/**
+ * @brief      Move o carrinho de acordo com o estado atual
+ *
+ * @param[in]  side  Estado para mover o carrinho 
+ */
 void forwardSide(int side) {
 	if(side == 1) {
 		forwardRight();
@@ -482,13 +328,20 @@ void forwardPoweredSide(int side, float eff_a, float eff_b) {
 
 }
 
+
+/**
+ * @brief      Move o motor para a frente de acordo com a eficiencia recebida
+ *
+ * @param[in]  eff1  A eficiencia do motor A
+ * @param[in]  eff2  A eficiencia do motor B
+ */
 void forwardPowered(float eff1, float eff2) {
 	spinA_AH(255*eff1);
 	spinB_H(255*eff2);	
 }
 
 /**
- * @brief      Move o motor para trás porém desviando para a esquerda.
+ * @brief      Move o motor para frente porém desviando para a esquerda.
  */
 void forwardLeft() {
 	spinA_AH(255*0);
@@ -496,7 +349,7 @@ void forwardLeft() {
 }
 
 /**
- * @brief      Move o motor para trás porém desviando para a direita.
+ * @brief      Move o motor para frente porém desviando para a direita.
  */
 void forwardRight() {
 	spinA_AH(255*0.3);
@@ -504,38 +357,23 @@ void forwardRight() {
 }
 
 /**
- * @brief      Gira o Motor A no sentido horário
- *
- * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
- */
-void spinA_AH(int eficiency) {
-	//Gira o Motor A no sentido horario
-	analogWrite(HB1, eficiency);
-	// digitalWrite(HB1, HIGH);
-	digitalWrite(HB2, LOW);
-}
-
-/**
  * @brief      Gira o Motor A no sentido anti-horário
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinA_H(int eficiency) {
-	//Gira o Motor A no sentido anti-horario
-	analogWrite(HB2, eficiency);
-	digitalWrite(HB1, LOW);
-	// digitalWrite(HB2, HIGH);
+void spinA_AH(int eficiency) {
+	analogWrite(HB1, eficiency);
+	digitalWrite(HB2, LOW);
 }
 
 /**
- * @brief      Gira o Motor B no sentido horário
+ * @brief      Gira o Motor A no sentido horário
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
-void spinB_AH(int eficiency) {
-	analogWrite(HB3, eficiency);
-	// digitalWrite(HB3, HIGH);
-	digitalWrite(HB4, LOW);
+void spinA_H(int eficiency) {
+	analogWrite(HB2, eficiency);
+	digitalWrite(HB1, LOW);
 }
 
 /**
@@ -543,10 +381,19 @@ void spinB_AH(int eficiency) {
  *
  * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
  */
+void spinB_AH(int eficiency) {
+	analogWrite(HB3, eficiency);
+	digitalWrite(HB4, LOW);
+}
+
+/**
+ * @brief      Gira o Motor B no sentido horário
+ *
+ * @param[in]  eficiency  A eficiencia do motor, o quanto de potência que será recebido pelo motor. (0 - 255)
+ */
 void spinB_H(int eficiency) {
 	analogWrite(HB4, eficiency);
 	digitalWrite(HB3, LOW);
-	// digitalWrite(HB4, HIGH);
 }
 
 /**
@@ -566,10 +413,6 @@ void stop() {
 	digitalWrite(HB2, LOW);
 	digitalWrite(HB3, LOW);
 	digitalWrite(HB4, LOW);
-
-	// Força velocidade 0 de chaveamento no motor.
-	// analogWrite(SP1, 0);
-	// analogWrite(SP2, 0);
 }
 
 // Tira a média das leituras realizadas.
@@ -585,34 +428,26 @@ int getDistance(){
   return distance;
 }
 
-
-long PEGA_A_PORRA_DA_DISTANCIA() {
+// Pega a distancia do sensor ultrassonico
+long pegaDistancia() {
 
 	long duration, cm;
 
-  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  digitalWrite(TRIGGER_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIGGER_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIGGER_PIN, LOW);
+	digitalWrite(TRIGGER_PIN, LOW);
+	delayMicroseconds(2);
+	digitalWrite(TRIGGER_PIN, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(TRIGGER_PIN, LOW);
+	
+	duration = pulseIn(ECHO_PIN, HIGH);
 
-  // Read the signal from the sensor: a HIGH pulse whose
-  // duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  duration = pulseIn(ECHO_PIN, HIGH);
-
-  // convert the time into a distance
-  cm = microsecondsToCentimeters(duration);
+	cm = microsecondsToCentimeters(duration);
   
-  return cm;
-
+  	return cm;
 }
 
+//Converte o tempo em distancia
 long microsecondsToCentimeters(long microseconds) {
-  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
-  // The ping travels out and back, so to find the distance of the
-  // object we take half of the distance travelled.
-  return microseconds / 29 / 2;
+	
+	return microseconds / 29 / 2;
 }
