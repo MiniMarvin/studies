@@ -187,7 +187,7 @@ void obstaculo() {
 		Serial.print("STOP!!");
 		delay(1000);
 
-		// Gira até reencontrar a pista
+		// Gira até reencontrar a pista (deve girar para o mesmo lado do objeto.)
 		while(readLine != INSIDE_LINE) {
 			forwardPoweredSide(moveSide, 0.4, 0.6);
 		}
