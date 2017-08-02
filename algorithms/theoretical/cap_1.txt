@@ -1,0 +1,42 @@
+A = {31, 41, 59, 26, 41}
+
+iterations (up):
+
+    31, 41, 59, 26, 41
+    31, 41, 59, 26, 41
+    31, 41, 59, 26, 41
+    31, 41, 26, 59, 41
+    31, 26, 41, 59, 41
+    26, 31, 41, 59, 41
+    26, 31, 41, 41, 59
+    
+iterations (down):
+
+    31, 41, 59, 26, 41
+    41, 31, 59, 26, 41
+    41, 59, 31, 26, 41
+    59, 41, 31, 26, 41
+    59, 41, 31, 41, 26
+    59, 41, 41, 31, 26
+    
+    
+
+Um array linear, queremos encontrar v em array
+--------------------
+ret = NIL
+
+for a in arr:
+    if a = v:
+        ret = a
+        
+retorna ret
+--------------------
+val = NIL
+
+for a = 0 to len(arr):
+    if arr[a] = v:
+        val = arr[a]
+        return val
+        
+return val
+    

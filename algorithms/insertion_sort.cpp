@@ -1,8 +1,11 @@
+// TODO: resolver o problema do insertion sort
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 
 #define MAX_SIZE 100
+#define MAX_NUM 100
 
 using namespace std; 
 
@@ -12,8 +15,16 @@ void insertion_sort(int *arr, int size, int order);
 
 int main(int argc, char const *argv[]) {
 	
+	srand(time(NULL));
+	
 	int* arr;
 	int size = 0;
+	int order = 1;
+	
+	if(argc > 1) {
+		order = atoi(argv[1]);
+		cout << "got: " << order << endl;
+	}
 
 	size = randArr(arr);
 	cout << "size: " << size << endl;
@@ -26,7 +37,7 @@ int main(int argc, char const *argv[]) {
 	fclose(fp);
 	//--------------------------//
 
-	insertion_sort(arr, size, -1);
+	insertion_sort(arr, size, order);
 
 	return 0;
 }
@@ -39,7 +50,6 @@ int main(int argc, char const *argv[]) {
  * @return     The array size.
  */
 int randArr(int *&arr) {
-	srand(time(NULL));
 
 	int size = rand()%MAX_SIZE;
 	cout << "size: " << size << endl;
@@ -49,8 +59,11 @@ int randArr(int *&arr) {
 
 	for (int i = 0; i < size; ++i) {
 		// (*arr)[i] = rand();
-		arr[i] = rand();
+		arr[i] = rand()%MAX_NUM;
+		cout << arr[i] << " ";
 	}
+
+	cout << endl;
 
 	// Unity test area----------//
 	FILE* fp= fopen("b1.txt", "w+"); 
@@ -74,14 +87,21 @@ int randArr(int *&arr) {
  */
 void insertion_sort(int *arr, int size, int order) {
 	
-	for (int i = 2; i < size; ++i) {
+	int key = 0;
 
-		int key = arr[i];
+	
+	for (int i = 1; i < size; ++i) {
+
+		key = arr[i];
+		int j = i - 1;
 
 		// growing order
-		for (int j = i - 1; j >= 0 && ( order > 0 ? arr[j] > key : arr[j] < key ); --j) {
+		for (; j > 0 && ( order > 0 ? arr[j] > key : arr[j] < key ); --j) {
 			arr[j+1] = arr[j];
 		}
+		
+		if(j >= 0 && ( order > 0 ? arr[j] > key : arr[j] < key ) )
+			arr[j] = key;
 		
 	}
 
