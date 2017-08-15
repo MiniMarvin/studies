@@ -1,21 +1,41 @@
 #include <iostream>
 
+#define NUM_LIMIT 100000
+
 using namespace std;
 
-long int fib(unsigned int x, long int* fib_arr);
+unsigned long int fib(unsigned int x, unsigned long int* fib_arr);
+
+// TODO: ordenar o array
 
 int main() {
 
-	long int fib_a;
-	long int fib_arr[100000] = {0};
+	unsigned long int fib_a;
+	unsigned long int fib_arr[100000] = {0};
+	unsigned long int u;
+	int t_cases = 0;
+	int in_a, in_b, end;
 	
-	
+	// Definição da base de fibonacci
 	fib_arr[0] = 0;
 	fib_arr[1] = 1;
 
-	long int u = fib(7, fib_arr);
+	cin >> t_cases;
+	for(int i = 1; i <= t_cases; i++) {
 
-	cout << u << endl;
+		cin >> in_a;
+		cin >> in_b;
+	
+		end = in_a + in_b;
+
+		cout << "Case "	<< i << ": ";
+	
+		for(int j = in_a; j <= end; j++) {
+			cout << fib(j, fib_arr);
+			cout << " ";
+		}
+		cout << endl;
+	}
 	
 
 	return 0;
@@ -23,7 +43,7 @@ int main() {
 
 
 
-long int fib(unsigned int x, long int* fib_arr) {
+unsigned long int fib(unsigned int x, unsigned long int* fib_arr) {
 	int u = x-1;
 	
 
@@ -38,7 +58,7 @@ long int fib(unsigned int x, long int* fib_arr) {
 			} // Encontra o último elemento computado		
 
 			for(int i = u; i < x - 1; i++) { // Parte do último computado até o que se deseja computar
-				fib_arr[i+1] = fib_arr[i] + fib_arr[i-1];
+				fib_arr[i+1] = (fib_arr[i] + fib_arr[i-1])%NUM_LIMIT;
 			}
 		}
 
