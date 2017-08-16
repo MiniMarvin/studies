@@ -5,6 +5,7 @@ using namespace std;
 long int fib(int pos);
 long int fibArr(int begin, int end, long int *arr);
 void printArr(long int *arr, int size);
+void insertion_sort(long int *arr, int size, int order);
 
 
 // TODO: recebe todos os valores e calcula os valores de fibonacci somente necessários para aquelas operações
@@ -24,6 +25,8 @@ int main() {
 	long int lower = in_a[0];
 	long int bigger = in_a[0] + in_b[0];
 	
+	long int max_diff = 0;
+	
 	
 	// receive all the possible inputs
 	for (int i = 1; i < in_num; i++) { // starts in 1 because the 0 has already been done
@@ -38,6 +41,11 @@ int main() {
 		if(in_a[i] + in_b[i] > bigger) {
 			bigger = in_a[i] + in_b[i];
 		}
+		
+		if(in_b[i] > max_diff) {
+			max_diff = in_b[i];
+		}
+		
 	} 
 	
 	// Create array to store all the need to compute arrays
@@ -45,24 +53,54 @@ int main() {
 	long int *fib_arr = new long int[bigger];
 	
 	// Compute all of them
-	fibArr(lower, bigger, fib_arr);
+	fibArr(lower, bigger + 1, fib_arr);
 	
-	for(int i = 0; i < in_num - 1; i++) { // clone, order and print all of them.
+	// Generate the array that will be ploted with the biggest size possible
+	long int *p_arr = new long int[max_diff];
+	// long int *p_arr = new long int[101];
+	
+	for(int i = 0; i < in_num; i++) { // clone, order and print all of them.
 		// Generate the array that will be ploted now
-		long int *p_arr = new long int[bigger - lower];
 		int sum = in_a[i] + in_b[i];
 		
-		for(int j = in_a[i]; j < sum; j++) {
-			p_arr[j - in_a[i]] = fib_arr[j];
+		p_arr[0] = fib_arr[in_a[i] - 1];
+		
+		// Põe eles em ordem decrescente os 100 primeiros
+		for(int j = in_a[i], k = 1; k < in_b[i] + 1; j++, k++) {
+			p_arr[k] = fib_arr[j];
+			
+			// Verifica se está nos 100 primeiros
+			if(k < 100) {
+				long int key = p_arr[k - 1];
+				
+				if(fib_arr[j] < key) {
+					for(int u = k; u > 0 && fib_arr[j] < p_arr[u - 1]; u--) { // vai procurando o menor para inserir lá
+						p_arr[u] = p_arr[u - 1]; // Põe para frente
+						p_arr[u - 1] = fib_arr[j]; // Coloca o novo elemento no ponto correto
+					}
+					
+					
+				}
+			}
+			else { // se não está volta para o fim dos 100 primeiros elementos e itera lá
+				int key = p_arr[99];
+				
+				if(fib_arr[j] < key) {
+					for(int u = 99; u > 0 && fib_arr[j] < p_arr[u - 1]; u--) { // vai procurando o menor para inserir lá
+						p_arr[u] = p_arr[u - 1]; // Põe para frente
+						p_arr[u - 1] = fib_arr[j]; // Coloca o novo elemento no ponto correto
+					}
+				}
+			}
 		}
 		
-		// print p_arr
-		printArr(p_arr, sum);
 		
-		delete[] p_arr;
+		cout << "Case " << i + 1 << ": ";
+		// print p_arr
+		printArr(p_arr, in_b[i] + 1);
 	}
 	
-	printArr(fib_arr, bigger - lower);
+	//printArr(fib_arr, bigger - lower);
 	
 	
 	delete[] in_a;
@@ -70,7 +108,6 @@ int main() {
 	
 	return 0;
 }
-
 
 long int fib(int pos) {
 	long int fib_val = 0;
@@ -101,10 +138,12 @@ long int fibArr(int begin, int end, long int *arr) {
 	long int fib_val = 0;
 	int old[] = {0,1};
 	begin = 1;
+	arr[0] = 0;
+	arr[1] = 1;
 	
-	for (int i = 1; i < end; i++) {
+	for (int i = 3; i < end; i++) {
 		
-		fib_val = (old[0] + old[1])%10000;
+		fib_val = (old[0] + old[1])%100000;
 		old[0] = old[1];
 		old[1] = fib_val;
 		
