@@ -181,13 +181,10 @@ public:
 	 * @param[in]  value  The value of the node that is been search.
 	 */
 	void remove_node(int value) {
-		// TODO: find a way to find it's father (recursive: return the son value)
+
 		// Find the node to remove
-		tree_node *element, *father;
+		tree_node *element = this->head, *father;
 
-		father = element = this->head;
-
-		// Busca pelo nó e pelo pai dele ------------------------------------------//
 		// Follow the path of the tree order untill find a node with the wanted value
 		while(element != NULL && element->get_value() != value ) {
 			father = element;
@@ -199,86 +196,75 @@ public:
 			}
 		}
 
-		//-------------------------------------------------------------------------//
-		// Check if the found node really did exist
+
+		// check if the node is a real node
 		if(element == NULL) {
-			cout << "nothing has been done" << endl;
+			cout << "nada a remover" << endl;
 			return;
 		}
 
-		// Leaf node
-		else if(element->get_left() == NULL &&  element->get_right() == NULL) {
-			if(element->get_value() > father->get_value()) {
-				father->set_left(NULL);
-				father->left_null();
-			}
-			else {
+		// No children
+		else if(element->get_left() == NULL && element->get_right() == NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
 				father->set_right(NULL);
-				father->right_null();
 			}
-
-			cout << "deleted leaf" << endl;
-			free(element);
-		}
-
-		// The node has at least one child
-		else if(element->get_right() != NULL || element->get_left() != NULL) {
-			
-			tree_node *buff, *buff_father;
-
-			if(element->get_left() != NULL && element->get_right() == NULL) { // The children node is at left
-				
-				buff = element->get_left();
-
-				if(father->get_value() < element->get_value()) {
-					father->set_left(element->get_left());
-					delete element;
-					cout << "deleted" << endl;
-				}
-				else {
-					father->set_right(element->get_left());
-					delete element;
-					cout << "deleted" << endl;	
-				}
-			}
-
-			else if(element->get_left() == NULL && element->get_right() != NULL){ // The children node is at left
-				
-				buff = element->get_right();
-
-				if(father->get_value() < element->get_value()) {
-					father->set_left(element->get_right());
-					delete element;
-					cout << "deleted" << endl;
-				}
-				else {
-					father->set_right(element->get_right());
-					delete element;
-					cout << "deleted" << endl;	
-				}
-			}
-
-			// The node has two children
 			else {
-				// search for the biggest element at left
-				buff = element->get_left();
-				buff_father = element->get_left();
-
-				while(buff->get_right() != NULL) {
-					buff_father = buff;
-					buff = buff->get_right();					
-				}
-
-				// Swap the nodes values
-				int cp = element->get_value();
-				element->set_value(buff->get_value());
-				buff->set_value(cp);
-
-				// Remove the end node
-				remove_node(buff, buff_father);
-
+				father->set_left(NULL);
 			}
+			cout << "Removed Leaf" << endl;
 		}
+
+		// One child  at right
+		else if(element->get_left() == NULL && element->get_right() != NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
+				father->set_right(element->get_right());
+			}
+			else {
+				father->set_left(element->get_right());
+			}
+
+			cout << "Removed R node" << endl;
+		}
+
+		// One child at left
+		else if(element->get_left() != NULL && element->get_right() == NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
+				father->set_right(element->get_right());
+			}
+			else {
+				father->set_left(element->get_right());
+			}
+
+			cout << "Removed L node" << endl;
+		}
+
+		// Node with two children
+		else {
+			// find the max element at left
+			tree_node *buff = element, *buff_father;
+
+			buff = buff->get_left();
+
+			while(buff->get_right() != NULL) {
+				buff_father = buff;
+			    buff = buff->get_right();
+			}
+
+			// swap them
+			element->set_value( buff->get_value() );
+
+			cout << "Removing big node" << endl;
+
+			// remove the node
+			remove_node(buff, buff_father);
+
+			return;
+		}
+
+		free(element);
 
 	}
 
@@ -288,76 +274,56 @@ public:
 	 * @param[in]  value  The value of the node that is been search.
 	 */
 	void remove_node(tree_node *element, tree_node *father) {
-		// TODO: find a way to find it's father (recursive: return the son value)
-		// Find the node to remove
-		tree_node *buff_father;
 
-		// Check if the found node really did exist
-		if(element == NULL){
+		// check if the node is a real node
+		if(element == NULL) {
+			cout << "nada a remover" << endl;
 			return;
 		}
 
-		// Leaf node
-		else if(element->get_left() == NULL &&  element->get_right() == NULL) {
-			delete element;
-		}
-
-		// The node has at least one child
-		else if(element->get_right() != NULL || element->get_left() != NULL) {
-			
-			tree_node* buff;
-
-			if(element->get_left() != NULL && element->get_right() == NULL) { // The children node is at left
-				
-				buff = element->get_left();
-
-				if(father->get_value() < element->get_value()) {
-					father->set_left(element->get_left());
-					delete element;
-					cout << "deleted" << endl;
-				}
-				else {
-					father->set_right(element->get_left());
-					delete element;
-					cout << "deleted" << endl;	
-				}
+		// No children
+		else if(element->get_left() == NULL && element->get_right() == NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
+				father->set_right(NULL);
 			}
-
-			else if(element->get_left() == NULL && element->get_right() != NULL){ // The children node is at left
-				
-				buff = element->get_right();
-
-				if(father->get_value() < element->get_value()) {
-					father->set_left(element->get_right());
-					delete element;
-					cout << "deleted" << endl;
-				}
-				else {
-					father->set_right(element->get_right());
-					delete element;
-					cout << "deleted" << endl;	
-				}
-			}
-
-			// The node has two children
 			else {
-				// search for the biggest element at left
-				buff = element->get_left();
-
-
-				while(buff->get_right() != NULL) {
-					buff = buff->get_right();					
-				}
-
-				int cp = element->get_value();
-				element->set_value(buff->get_value());
-
-				remove_node(buff, buff_father);
-
+				father->set_left(NULL);
 			}
+
+			cout << "Removed Leaf" << endl;
 		}
+
+		// One child  at right
+		else if(element->get_left() == NULL && element->get_right() != NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
+				father->set_right(element->get_right());
+			}
+			else {
+				father->set_left(element->get_right());
+			}
+
+			cout << "Removed R node" << endl;
+		}
+
+		// One child at left
+		else if(element->get_left() != NULL && element->get_right() == NULL) {
+			// Delete the node
+			if(father->get_value() < element->get_value()) {
+				father->set_right(element->get_right());
+			}
+			else {
+				father->set_left(element->get_right());
+			}
+
+			cout << "Removed L node" << endl;
+		}
+
+		free(element);
 
 	}
+
 
 	/**
 	 * @brief      Find a node with a specific value in the tree.
@@ -489,7 +455,7 @@ int main(int argc, char const *argv[]) {
 	cout << "pos-order: ";
 	a->print_posorder();
 
-	a->remove_node(arr[9]);
+	a->remove_node(arr[3]);
 
 	cout << endl;
 
