@@ -170,8 +170,8 @@ private:
 				el->set_right(new node(value));
 				el->grow_balance();
 
-				printf("node: %d | balance: %d\n", el->get_right()->get_value(), el->get_right()->get_balance());
-				printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
+				// printf("node: %d | balance: %d\n", el->get_right()->get_value(), el->get_right()->get_balance());
+				// printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
 				
 				return el;
 			}
@@ -208,8 +208,8 @@ private:
 				el->set_left(new node(value));
 				el->drop_balance();
 				
-				printf("node: %d | balance: %d\n", el->get_left()->get_value(), el->get_left()->get_balance());
-				printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
+				// printf("node: %d | balance: %d\n", el->get_left()->get_value(), el->get_left()->get_balance());
+				// printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
 				
 				return el;
 			}
@@ -241,7 +241,7 @@ private:
 			
 		}
 		
-		printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
+		// printf("node: %d | balance: %d\n", el->get_value(), el->get_balance());
 		
 		return el;
 	}
