@@ -15,6 +15,8 @@
  * -> . and
  * -> > so
  * -> - negate
+ * 
+ * TODO: implement a sorting function, probably QuickSort
  */
 
 // #include <bits/stdc++.h> // TODO: modificar a biblioteca importada
@@ -30,7 +32,8 @@ using namespace std;
 
 // Prototypes
 int detect_op(char ch);
-void sub_expr(string form, vector<string> expr);
+void sub_expr(string form, vector<string> &expr);
+bool order_str(string a, string b);
 
 int main(int argc, char const *argv[]) {
 	int n;
@@ -44,9 +47,17 @@ int main(int argc, char const *argv[]) {
 
 	for (int i = 0; i < n; ++i) {
 		getline(cin, form);
-		cout << form << endl;
+		// cout << form << endl;
 		sub_expr(form, expr);
 		/* code */
+		for (int j = 0; j < expr.size(); ++j) {
+			string buff = expr[j];
+			cout << buff << " | ";
+		}
+		cout << endl;
+
+
+		expr.clear();
 	}
 	
 
@@ -62,11 +73,10 @@ int main(int argc, char const *argv[]) {
  * @param form the string expression to subexpress
  * @param expr The set of expressions that will beoutputed
  */
-void sub_expr(string form, vector<string> expr) {
+void sub_expr(string form, vector<string> &expr) {
 	
 	int order = 0, op = 0, pos = -1, last_pos = 0;
 	string str1, str2, *clone;
-	cout << "-- expression : " << form << " --" << endl;
 
 	// Adds the expression to the array
 	expr.push_back(form);
@@ -95,7 +105,7 @@ void sub_expr(string form, vector<string> expr) {
 			op = detect_op(form[i]);
 			// find the expressions to evaluate 
 			if(op != 0) {
-				cout << "operator at: " << i << endl;
+				// cout << "operator at: " << i << endl;
 				pos = i;
 				break;
 			}
@@ -108,22 +118,19 @@ void sub_expr(string form, vector<string> expr) {
 	if(op == 4) { // op -> -
 		// find the last ')'
 		last_pos = form.find_last_of(")");
-		str1 = form.substr(pos + 1, last_pos - 1); // ignore first and all last characters untill ignore all extra ')'
+		str1 = form.substr(pos + 1, last_pos - pos - 1); // ignore first and all last characters untill ignore all extra ')'
 		sub_expr(str1, expr);
 	}
 
 	// if the operator isn't negation everything back him
 	// and everything after him is part of the subexpression
 	else { // TODO: make the last part become corret
+		
+		last_pos = form.find_last_of(")");
+		str2 = form.substr(pos + 1, last_pos - pos - 1); // ignore first and all last characters untill ignore all extra ')'
+
 		// save form string to don't lose it with substr
 		str1 = form.substr(1, pos - 1); // ignore first and last character
-
-		last_pos = form.find_last_of(")");
-
-		str2 = form.substr(pos + 1, last_pos - 3); // ignore first and all last characters untill ignore all extra ')'
-		// str2 = form.substr(pos, last_pos - 1);
-
-		cout << "kuku " << str2 << endl;
 
 		sub_expr(str1, expr);
 		sub_expr(str2, expr);
@@ -142,4 +149,58 @@ int detect_op(char ch) {
 	}
 
 	return op;
+}
+
+bool order_str(string a, string b) {
+	
+	if(a.size() == b.size()) { // lexicographical order
+		for (int i = 0; i < a.size(); ++i) {
+			if(a[i] < b[i]){
+				return 1;
+			}
+			else if(a[i] < b[i]) {
+				return 0;
+			}
+		}
+	}
+
+	return a.size() > b.size() ? 0 : 1;
+}
+
+/**
+ * @brief      Function for sorting a list of strings.
+ *             The list is ordered based on the fact
+ *             that a partial order at every two elements
+ *             is made by any function f, that means:
+ *             once we receive a, b, c, ... we can
+ *             stabilsh if a < b, doing:
+ *             if(f(a,b) == true) a < b
+ *             else b > a.
+ *
+ * @param      lst   The list of string
+ * @param[in]  f     a ordering function, to stabilish the
+ * partial order into the elements of the list.
+ */
+void q_sort(vector<string> &lst, bool (*f)(int, int)) {
+
+}
+
+void quick_sort(vector<string> &lst, int b, int e, bool (*f)(int, int)) {
+	pivot = b;
+	int i = b + 1; j = e;
+
+	if(b <= e) return;
+
+	while(i < j) {
+		for (i = 0; lst[i] < pivot; ++i) {
+			
+		}
+		for(; lst[i] < pivot && i < end; i++);
+        for(; lst[j] > pivot && j > begin; j--);
+        if(i < j) {
+            swap(lst[i], lst[j]);
+            i++;
+            j--;
+        }
+	}
 }
