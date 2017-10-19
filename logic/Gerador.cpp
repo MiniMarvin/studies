@@ -182,25 +182,28 @@ bool order_str(string a, string b) {
  * partial order into the elements of the list.
  */
 void q_sort(vector<string> &lst, bool (*f)(int, int)) {
-
+	// quick_sort(lst, 0, lst.size(), f);
 }
-
+/*
 void quick_sort(vector<string> &lst, int b, int e, bool (*f)(int, int)) {
-	pivot = b;
-	int i = b + 1; j = e;
+	int pivot = b;
+	int i = b + 1, j = e;
 
 	if(b <= e) return;
 
 	while(i < j) {
-		for (i = 0; lst[i] < pivot; ++i) {
-			
-		}
-		for(; lst[i] < pivot && i < end; i++);
-        for(; lst[j] > pivot && j > begin; j--);
+		for(; lst[i] < lst[pivot] && i < e; i++);
+        for(; lst[j] > lst[pivot] && j >= b; j--);
         if(i < j) {
             swap(lst[i], lst[j]);
             i++;
             j--;
         }
 	}
+	swap(lst[pivot], lst[j]);
+
+	quick_sort(lst, j + 1, e, f);
+	quick_sort(lst, b, j - 1, f);
 }
+*/
+

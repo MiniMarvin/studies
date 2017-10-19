@@ -1,0 +1,19 @@
+swap: 8 0
+swap: 4 0
+swap: 21 -7
+swap: 13 -2
+swap: 10 0
+swap: 10 -2
+swap: 0 -7
+swap: -7 -2
+swap: -7 -7
+swap: 10 10
+swap: 18 8
+swap: 40 4
+swap: 51 8
+swap: 51 4
+swap: 4 4
+swap: 17 17
+swap: 40 18
+swap: 18 18
+11 -7 -2 0 10 0 44 4 51 8 13 17 21 18 
