@@ -33,7 +33,10 @@ using namespace std;
 // Prototypes
 int detect_op(char ch);
 void sub_expr(string form, vector<string> &expr);
-bool order_str(string a, string b);
+bool str_ord(string a, string b);
+void printv(std::vector<string> v);
+void printvec(std::vector<string> v, int b, int e);
+void qs(vector<string> &ls, int b, int e, bool (*f)(string, string));
 
 int main(int argc, char const *argv[]) {
 	int n;
@@ -52,10 +55,13 @@ int main(int argc, char const *argv[]) {
 		/* code */
 		for (int j = 0; j < expr.size(); ++j) {
 			string buff = expr[j];
-			cout << buff << " | ";
+			// cout << buff << " | ";
 		}
-		cout << endl;
+		// cout << endl;
 
+		qs(expr, 0, expr.size(), str_ord);
+
+		printv(expr);	
 
 		expr.clear();
 	}
@@ -151,59 +157,98 @@ int detect_op(char ch) {
 	return op;
 }
 
-bool order_str(string a, string b) {
-	
-	if(a.size() == b.size()) { // lexicographical order
+bool str_ord(string a, string b) {
+	if(a.size() == b.size()) {
 		for (int i = 0; i < a.size(); ++i) {
-			if(a[i] < b[i]){
-				return 1;
+			// cout << a[i] << " <-> " << b[i] << endl;
+			if(a[i] == b[i]) {
+				continue;
 			}
-			else if(a[i] < b[i]) {
-				return 0;
+			else{
+				return a[i] < b[i];
 			}
 		}
 	}
+	return a.size() < b.size();
+}
 
-	return a.size() > b.size() ? 0 : 1;
+void swap_st(string &a, string &b){
+	string t = a;
+	a = b;
+	b = t;
 }
 
 /**
- * @brief      Function for sorting a list of strings.
- *             The list is ordered based on the fact
- *             that a partial order at every two elements
- *             is made by any function f, that means:
- *             once we receive a, b, c, ... we can
- *             stabilsh if a < b, doing:
- *             if(f(a,b) == true) a < b
- *             else b > a.
+ * @brief      Split the array to use quicksort in strings
  *
- * @param      lst   The list of string
- * @param[in]  f     a ordering function, to stabilish the
- * partial order into the elements of the list.
+ * @param      ls    The list of strings reference
+ * @param[in]  b     The begining point where to apply the function
+ * @param[in]  e     The ending point where to apply the function
+ * @param[in]  f     The function that controls the ">" evaluation
+ *
+ * @return     The element that already is in the correct order
  */
-void q_sort(vector<string> &lst, bool (*f)(int, int)) {
-	// quick_sort(lst, 0, lst.size(), f);
-}
-/*
-void quick_sort(vector<string> &lst, int b, int e, bool (*f)(int, int)) {
+int sp(vector<string> &ls, int b, int e, bool (*f)(string, string)) {
+	int i = b + 1, j = e - 1;
 	int pivot = b;
-	int i = b + 1, j = e;
 
-	if(b <= e) return;
+	// printvec(ls, b, e);
+	// cout << "pivot: " << ls[pivot] << endl;
 
 	while(i < j) {
-		for(; lst[i] < lst[pivot] && i < e; i++);
-        for(; lst[j] > lst[pivot] && j >= b; j--);
-        if(i < j) {
-            swap(lst[i], lst[j]);
-            i++;
-            j--;
-        }
+		for (; i < e && f(ls[i], ls[pivot]); ++i) {
+			// cout << ls[pivot] << "|" << ls[pivot].size() << " : " << ls[i] << "|" << ls[i].size() << endl;
+		}
+		for (; j > i && !f(ls[j], ls[pivot]); --j) {
+			// cout << ls[pivot] << "|" << ls[pivot].size() << " <> " << ls[j] << "|" << ls[j].size() << endl;
+		}
+		if(i <= j) {
+			swap_st(ls[i], ls[j]);
+			i++;
+			j--;
+		}
 	}
-	swap(lst[pivot], lst[j]);
 
-	quick_sort(lst, j + 1, e, f);
-	quick_sort(lst, b, j - 1, f);
+	if(!f(ls[pivot], ls[j])) {
+		swap_st(ls[pivot], ls[j]);	
+		// cout << "swapped: " << ls[pivot] << " " << ls[j] << endl;
+	}
+
+	return j;
 }
-*/
 
+/**
+ * @brief      A string array quicksort algorithm
+ *
+ * @param      ls    the array vector reference
+ * @param[in]  b     The begining point where to apply the function
+ * @param[in]  e     The ending point where to apply the function
+ * @param[in]  f     The function that controls the ">" evaluation
+ */
+void qs(vector<string> &ls, int b, int e, bool (*f)(string, string)) {
+	if(e <= b) {
+		return;
+	}
+	// cout << "b: " << b << " e: " << e << endl;
+	// printv(ls);
+
+	int h = sp(ls, b, e, f);
+
+	// qs(ls, b, h - 1, f);
+	qs(ls, b, h, f);
+	qs(ls, h + 1, e, f);
+}
+
+void printv(std::vector<string> v){
+	for (int i = 0; i < v.size(); ++i) {
+		cout << v[i] << " ";
+	}
+	cout << endl;
+}
+
+void printvec(std::vector<string> v, int b, int e){
+	for (int i = b; i < e; ++i) {
+		cout << v[i] << " ";
+	}
+	cout << endl;
+}
