@@ -16,10 +16,26 @@
  * -> > so
  * -> - negate
  * 
- * TODO: implement a sorting function, probably QuickSort
+ * TODO: make an evaluation function which receives the operator as argument and
+ * the expressions them it make the correct operation of evaluating the funcion.
+ * 
+ * TODO: make an evaluating function and iterate throught the 2^a, where a = number
+ * of atomic expressions.
+ *  - make a vector of evaluations and put all the evaluations into it in growing
+ *  order, that means, in every expression the table should have an expression to
+ *  the old expression, them we store everything and go consulting the table and
+ *  comparing the strings to see if they match, and if they do, we should evaluate
+ *  the parts of the expression as values.
+ *  
+ *  - go spliting the expressions untill find a atomic funcion, them we get the
+ *  correct eval from the param (evals) which is an integer containing the correct
+ *  number of evals
+ *  x_eval = eval & 1
+ *  y_eval = (eval << 1) & 1
+ *  z_eval = (eval << 2) & 1
+ *  t_eval = (eval << 3) & 1
  */
 
-// #include <bits/stdc++.h> // TODO: modificar a biblioteca importada
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -70,14 +86,12 @@ int main(int argc, char const *argv[]) {
 	return 0;
 }
 
-
 /**
- * @brief Find all subexpressions
- * @details Iters throught the string to find every single subexpression
- * that's insed of it
- * 
- * @param form the string expression to subexpress
- * @param expr The set of expressions that will beoutputed
+ * @brief      Find all subexpressions.
+ * Iters throught the string to find every single subexpression inside it.
+ *
+ * @param[in]  form  The string expression to find subexpressions.
+ * @param      expr  The set of expressions where we should insert the expressions.
  */
 void sub_expr(string form, vector<string> &expr) {
 	
@@ -130,7 +144,7 @@ void sub_expr(string form, vector<string> &expr) {
 
 	// if the operator isn't negation everything back him
 	// and everything after him is part of the subexpression
-	else { // TODO: make the last part become corret
+	else { 
 		
 		last_pos = form.find_last_of(")");
 		str2 = form.substr(pos + 1, last_pos - pos - 1); // ignore first and all last characters untill ignore all extra ')'
@@ -143,6 +157,17 @@ void sub_expr(string form, vector<string> &expr) {
 	}
 }
 
+/**
+ * @brief      Defines which is the symbol operation in the propositional logic.
+ *
+ * @param[in]  ch    The symbol which we want to match with the logic operation.
+ *
+ * @return     A number representing the logic operation
+ * 1 - disjunction (+)
+ * 2 - conjunction (.)
+ * 3 - implication (>)
+ * 4 - negation (-)
+ */
 int detect_op(char ch) {
 	int op = 0;
 	char dictionary[] = {'+', '.', '>', '-'};
@@ -157,6 +182,17 @@ int detect_op(char ch) {
 	return op;
 }
 
+/**
+ * @brief      Function that defines when a string is bigger than another one.
+ * a is bigger than b if the size of a is bigger than the size of b, if the size
+ * of the strings match, the string is ordered by lexicographic order, character
+ * by character untill the first character not matching.
+ *
+ * @param[in]  a     The first string to compare.
+ * @param[in]  b     The second string to compare.
+ *
+ * @return     1 if a < b and 0 if a > b
+ */
 bool str_ord(string a, string b) {
 	if(a.size() == b.size()) {
 		for (int i = 0; i < a.size(); ++i) {
@@ -172,6 +208,12 @@ bool str_ord(string a, string b) {
 	return a.size() < b.size();
 }
 
+/**
+ * @brief      Swap two strings
+ *
+ * @param      a     First string to swap.
+ * @param      b     Second string to swap.
+ */
 void swap_st(string &a, string &b){
 	string t = a;
 	a = b;
@@ -239,6 +281,11 @@ void qs(vector<string> &ls, int b, int e, bool (*f)(string, string)) {
 	qs(ls, h + 1, e, f);
 }
 
+/**
+ * @brief      Prints an entire vector.
+ *
+ * @param[in]  v     Vector to print.
+ */
 void printv(std::vector<string> v){
 	for (int i = 0; i < v.size(); ++i) {
 		cout << v[i] << " ";
@@ -246,9 +293,22 @@ void printv(std::vector<string> v){
 	cout << endl;
 }
 
+/**
+ * @brief      Prints a vector from an element b to e.
+ *
+ * @param[in]  v     Vector to print.
+ * @param[in]  b     Beginning element to print.
+ * @param[in]  e     Ending element to print.
+ */
 void printvec(std::vector<string> v, int b, int e){
-	for (int i = b; i < e; ++i) {
+	for (int i = b; i < e && i < v.size(); ++i) {
 		cout << v[i] << " ";
 	}
 	cout << endl;
+}
+
+// Receive the big expression, them go spliting it and evaluating it, them insert it
+// into the pair that should be plotted in the end of the program.
+void eval(vector<string> ls, ) {
+
 }
