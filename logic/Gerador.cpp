@@ -1,4 +1,20 @@
 /**
+ * Truth table
+ * Copyright (C) 2017  Caio Moreira Gomes
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  * @Author: Caio M. Gomes
  * @Description: Project presented to the discipline of Logic for Computer Sciences
  * @Place: Recife
@@ -15,28 +31,6 @@
  * -> . and
  * -> > so
  * -> - negate
- * 
- *  - make a vector of evaluations and put all the evaluations into it in growing
- *  order, that means, in every expression the table should have an expression to
- *  the old expression, them we store everything and go consulting the table and
- *  comparing the strings to see if they match, and if they do, we should evaluate
- *  the parts of the expression as values.
- *  
- *  - go spliting the expressions untill find a atomic funcion, them we get the
- *  correct eval from the param (evals) which is an integer containing the correct
- *  number of evals
- *  first_eval = eval & 1
- *  second_eval = (eval << 1) & 1
- *  third_eval = (eval << 2) & 1
- *  forth_eval = (eval << 3) & 1
- *  
- *  TODO: read from text file
- *  TODO: correct quicksort problem in the case:
- *  |x|y|z|t|(-x)|((-x)+t)|(y.(-x))|(-((-x)+t))|((-((-x)+t)).z)|((y.(-x)).((-x)+t))|((-x)>((-((-x)+t)).z))|(((-x)>((-((-x)+t)).z)).((y.(-x)).((-x)+t)))|((((-x)>((-((-x)+t)).z)).((y.(-x)).((-x)+t)))+(-((-x)+t)))|
- *  which is mismatching the (-x) and the z
- *  also: |x|y|z|(-x)|(-y)|(z.x)|(z>x)|((z>x)+z)|(z+(z>x))|(((z>x)+z)>(-y))|((z+(z>x)).(z.x))|((-x).((z+(z>x)).(z.x)))|(((-x).((z+(z>x)).(z.x)))+(((z>x)+z)>(-y)))|
- *  and: |x|y|z|(-y)|(-z)|(z.y)|((z.y)+z)|(((z.y)+z)+x)|((-y).((z.y)+z))|((((z.y)+z)+x)>z)|(((z.y)+z)>((((z.y)+z)+x)>z))|(-(((z.y)+z)>((((z.y)+z)+x)>z)))|((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))|(((-y).((z.y)+z)).((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z)))))|((-z).(((-y).((z.y)+z)).((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))))|(((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))>((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z)))))|(-(((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))>((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))))|(((-z).(((-y).((z.y)+z)).((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z)))))).(-(((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z))))>((z.y)+(-(((z.y)+z)>((((z.y)+z)+x)>z)))))))|
- *  
  */
 
 #include <cstdio>
@@ -51,19 +45,24 @@
 
 using namespace std;
 
+void read_s(FILE* f, string &a) {
+	char buff[100000];
+	// fgets (buff, 100000, f);
+	fscanf(f, " %[^\n]", &buff);
+	a = buff;
+}
+
 // Prototypes
 int detect_op(char ch);
 void sub_expr(string form, vector<string> &expr);
 bool str_ord(string a, string b);
-void printv(std::vector<string> v);
-void printvec(std::vector<string> v, int b, int e);
-void qs(vector<string> &ls, int b, int e, bool (*f)(string, string));
+void printv(std::vector<string> v, FILE* fw);
 void correct_t(vector<string> &expr);
 int atomic(vector<string> expr);
 int find_in_expr(string form, vector<string> expr);
 bool eval_expr(string form, vector<string> expr, vector<int> valoration[], int step);
 int check_vals(vector<int> evals[], int sz);
-void print_bottom_line(vector <string> expr);
+void print_bottom_line(vector <string> expr, FILE* fw);
 void bs(vector<string> &expr, bool (*f)(string, string));
 
 int main(int argc, char const *argv[]) {
@@ -72,24 +71,32 @@ int main(int argc, char const *argv[]) {
 	vector<string> expr;
 	vector<int> *evals;
 
-	cin >> n;
+	FILE* fp = fopen("Expressoes.in", "r");
+	FILE* fw = fopen("Expressoes.out", "w");
+
 	char dictionary[] = {'+', '.', '>', '-'};
 
-	getline(cin, form); // clean \n buffer
+	// cin >> n;
+	fscanf(fp ," %d", &n);
+
+	// getline(cin, form); // clean \n buffer
+	// read_s(fp, form);
 
 	for (int i = 0; i < n; ++i) {
-		cout << "Tabela #" << i+1 << endl;
+		// cout << "Tabela #" << i+1 << endl;
+		fprintf(fw, "Tabela #%d\n", i+1);
 
-		getline(cin, form);
+		// getline(cin, form);
+		read_s(fp, form);
 		sub_expr(form, expr);
 		
 		// qs(expr, 0, expr.size(), str_ord);
 		bs(expr, str_ord);
 		correct_t(expr);
 		
-		print_bottom_line(expr);
-		printv(expr);
-		print_bottom_line(expr);
+		print_bottom_line(expr, fw);
+		printv(expr, fw);
+		print_bottom_line(expr, fw);
 
 		evals = new vector<int>[expr.size()];
 		
@@ -101,39 +108,48 @@ int main(int argc, char const *argv[]) {
 		}
 
 		for (int j = 0; j < (1 << atom_num); ++j) {
-			cout << "|";
+			// cout << "|";
+			fprintf(fw, "|");
 			for (int k = 0; k < expr.size(); ++k) { // iters thourght every subexpression
 				for (int l = 1; l < expr[k].size(); ++l) {
 					if(expr[k][l] == WEIRD_CHAR) continue;
-					cout << " ";
+					// cout << " ";
+					fprintf(fw, " ");
 				}
-				cout << evals[k][j] << "|";
-				// cout << "(" << j << "," << k << ") ";
+				// cout << evals[k][j] << "|";
+				fprintf(fw, "%d|", evals[k][j]);
 			}
-			cout << endl;
-			print_bottom_line(expr);
+			// cout << endl;
+			fprintf(fw, "\n");
+			print_bottom_line(expr, fw);
 		}
 
 		buff = check_vals(evals, expr.size());
 		switch(buff) {
 			case 0:
-				cout << "satisfativel e refutavel" << endl;
+				// cout << "satisfativel e refutavel" << endl;
+				fprintf(fw, "satisfativel e refutavel\n");
 				break;
 			case 1:
-				cout << "insatisfativel e refutavel" << endl;
+				// cout << "insatisfativel e refutavel" << endl;
+				fprintf(fw, "insatisfativel e refutavel\n");
 				break;
 			case 2:
-				cout << "satisfativel e tautologia" << endl;
+				// cout << "satisfativel e tautologia" << endl;
+				fprintf(fw, "satisfativel e tautologia\n");
 				break;
 			default:
 				break;
 		}
-		cout << endl;
+		// cout << endl;
+		fprintf(fw, "\n");
 
 		expr.clear();
 	}
-	
 
+	fclose(fw);
+	fclose(fp);
+	
 	return 0;
 }
 
@@ -148,8 +164,6 @@ void sub_expr(string form, vector<string> &expr) {
 	
 	int order = 0, op = 0, pos = -1, last_pos = 0;
 	string str1, str2, *clone;
-
-
 
 	// Adds the expression to the array if and only if the expression
 	// isn't there yet.
@@ -251,7 +265,6 @@ int detect_op(char ch) {
 bool str_ord(string a, string b) {
 	if(a.size() == b.size()) {
 		for (int i = 0; i < a.size(); ++i) {
-			// cout << a[i] << " <-> " << b[i] << endl;
 			if(a[i] == b[i]) {
 				continue;
 			}
@@ -264,109 +277,24 @@ bool str_ord(string a, string b) {
 }
 
 /**
- * @brief      Swap two strings
- *
- * @param      a     First string to swap.
- * @param      b     Second string to swap.
- */
-void swap_st(string &a, string &b){
-	string t = a;
-	a = b;
-	b = t;
-}
-
-/**
- * @brief      Split the array to use quicksort in strings
- *
- * @param      ls    The list of strings reference
- * @param[in]  b     The begining point where to apply the function
- * @param[in]  e     The ending point where to apply the function
- * @param[in]  f     The function that controls the ">" evaluation
- *
- * @return     The element that already is in the correct order
- */
-int sp(vector<string> &ls, int b, int e, bool (*f)(string, string)) {
-	int i = b + 1, j = e - 1;
-	int pivot = b;
-
-	// printvec(ls, b, e);
-	// cout << "pivot: " << ls[pivot] << endl;
-
-	while(i < j) {
-		for (; i < e && f(ls[i], ls[pivot]); ++i) {
-			// cout << ls[pivot] << "|" << ls[pivot].size() << " : " << ls[i] << "|" << ls[i].size() << endl;
-		}
-		for (; j > i && !f(ls[j], ls[pivot]); --j) {
-			// cout << ls[pivot] << "|" << ls[pivot].size() << " <> " << ls[j] << "|" << ls[j].size() << endl;
-		}
-		if(i <= j) {
-			swap_st(ls[i], ls[j]);
-			i++;
-			j--;
-		}
-	}
-
-	if(!f(ls[pivot], ls[j])) {
-		swap_st(ls[pivot], ls[j]);	
-		// cout << "swapped: " << ls[pivot] << " " << ls[j] << endl;
-	}
-
-	return j;
-}
-
-/**
- * @brief      A string array quicksort algorithm
- *
- * @param      ls    the array vector reference
- * @param[in]  b     The begining point where to apply the function
- * @param[in]  e     The ending point where to apply the function
- * @param[in]  f     The function that controls the ">" evaluation
- */
-void qs(vector<string> &ls, int b, int e, bool (*f)(string, string)) {
-	if(e <= b) {
-		return;
-	}
-	// cout << "b: " << b << " e: " << e << endl;
-	// printv(ls);
-
-	int h = sp(ls, b, e, f);
-
-	// qs(ls, b, h - 1, f);
-	qs(ls, b, h, f);
-	qs(ls, h + 1, e, f);
-}
-
-/**
  * @brief      Prints an entire vector.
  *
  * @param[in]  v     Vector to print.
  */
-void printv(std::vector<string> v){
-	cout << "|";
+void printv(std::vector<string> v, FILE* fw) {
+	// cout << "|";
+	fprintf(fw, "|");
 	for (int i = 0; i < v.size(); ++i) {
-		// cout << v[i] << "|";
-		// cout << "(" << v[i].size() << "-";
 		for (int j = 0; j < v[i].size(); ++j) {
 			if(v[i][j] == WEIRD_CHAR) continue;
-			cout << v[i][j];
+			// cout << v[i][j];
+			fprintf(fw, "%c", v[i][j]);
 		}
-		cout << "|";
+		// cout << "|";
+		fprintf(fw, "|");
 	}
-	cout << endl;
-}
-
-/**
- * @brief      Prints a vector from an element b to e.
- *
- * @param[in]  v     Vector to print.
- * @param[in]  b     Beginning element to print.
- * @param[in]  e     Ending element to print.
- */
-void printvec(std::vector<string> v, int b, int e){
-	for (int i = b; i < e && i < v.size(); ++i) {
-		cout << v[i] << " ";
-	}
-	cout << endl;
+	// cout << endl;
+	fprintf(fw, "\n");
 }
 
 /**
@@ -375,13 +303,6 @@ void printvec(std::vector<string> v, int b, int e){
  * @param      expr  The expressions list.
  */
 void correct_t(vector<string> &expr) {
-	// correct the (-x) and z case
-	// which have been mismatching
-	for (int i = 1; i < expr.size(); ++i) {
-		if(expr[i - 1].size() > 1 && expr[i].size() == 1) {
-			swap(expr[i - 1], expr[i]);
-		}
-	}
 	if(expr[0] == "t") {
 		int pos = atomic(expr);
 		for (int i = 1; i < pos; ++i) {
@@ -438,8 +359,21 @@ int find_in_expr(string form, vector<string> expr) {
 	return ct;
 }
 
-// Receive the big expression, them go spliting it and evaluating it, them insert it
-// into the pair that should be plotted in the end of the program.
+/**
+ * @brief      Evaluate all subexpressions in some specific expression.
+ * Goes recursively find all the subexpressions untill the atomic ones,
+ * them it gives to every atomic function the bit which it should receive,
+ * them it goes returning the valorations and the upper expression gets
+ * the received values to evaluate the high order expression untill the
+ * original expression gets valorated.
+ *
+ * @param[in]  form        The expression to valorate.
+ * @param[in]  expr        The expressions list.
+ * @param      valoration  The valorations list.
+ * @param[in]  step        The number with the binary representation to every atomic expression.
+ *
+ * @return     The boolean value of the expression received.
+ */
 bool eval_expr(string form, vector<string> expr, vector<int> valoration[], int step) {
 	int order = 0, op = 0, pos = -1, last_pos = 0, ct = 0;
 	bool eval, val1, val2;
@@ -562,15 +496,23 @@ int check_vals(vector<int> evals[], int sz) {
 	return st;
 }
 
-void print_bottom_line(vector <string> expr) {
+/**
+ * @brief      Prints a number of "-" equivalent to the size of the expressions list.
+ *
+ * @param[in]  expr  The expressions list.
+ */
+void print_bottom_line(vector <string> expr, FILE* fw) {
 	for (int j = 0; j < expr.size(); ++j) {
 		for (int k = 0; k < expr[j].length(); ++k) {
 			if(expr[j][k] == WEIRD_CHAR) continue;
-			cout << "-";
+			// cout << "-";
+			fprintf(fw, "-");
 		}
-		cout << "-";
+		// cout << "-";
+		fprintf(fw, "-");
 	}
-	cout << "-" << endl;
+	// cout << "-" << endl;
+	fprintf(fw, "-\n");
 }
 
 /**
