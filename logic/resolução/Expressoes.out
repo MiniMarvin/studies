@@ -1,0 +1,12 @@
+caso #1
+|(a+-b)|(b+-c)|(-a)|(-c)|
+caso #2
+nem todas as clausulas sao de horn
+caso #3
+|(a+-b)|(-a)|(b)|
+caso #4
+nao esta na FNC
+caso #5
+nem todas as clausulas sao de horn
+caso #6
+nao esta na FNC
