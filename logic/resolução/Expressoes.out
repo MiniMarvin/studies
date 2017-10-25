@@ -1,9 +1,11 @@
 caso #1
 |(a+-b)|(b+-c)|(-a)|(-c)|
+|(a+-b)|(b+-c)|(-a)|(-c)|(b)|(a+-|(+-c)|(+-b)|(-|(b)|(c)|(a)|(+-|
 caso #2
 nem todas as clausulas sao de horn
 caso #3
 |(a+-b)|(-a)|(b)|
+|(a+-b)|(-a)|(b)|(a+-|(+-b)|(-|(a)|(+-|
 caso #4
 nao esta na FNC
 caso #5

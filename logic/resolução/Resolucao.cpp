@@ -22,15 +22,27 @@
  * 
  * Algorithm:
  * -> Read the Expression
- * -> Extract all subexpressions 
- * -> Order subexpression
- * -> Evaluate the subexpressions from atomic expressions untill the last one
+ * -> Check if expressions are in FNC
+ * -> Extract all clauses
+ * -> Verify if all are horn clauses
+ * -> Order descending order every clause
+ * -> Find the first atomic clause "x" or "-x"
+ * -> Iter untill the expr list
+ * -> Go pushing back the results of supressions
+ * untill find the end of the array or find the
+ * a empty clause "()"
+ * -> Print the sat result
+ * 
  * 
  * Dictionary:
  * -> + or
  * -> . and
  * -> > so
  * -> - negate
+ * 
+ * 
+ * 
+ * TODO: CORRECT THE CLAUSE REMOTION
  */
 
 #include <cstdio>
@@ -60,12 +72,14 @@ void print_bottom_line(vector <string> expr, FILE* fw);
 void bs(vector<string> &expr, bool (*f)(string, string));
 int ex_clause(string form, vector<string> &expr);
 bool check_horn(vector<string> &expr);
+bool check_atomic(string form);
+int eval_expr(vector<string> &expr);
+void reduce_clauses(string c1, string c2, vector<string> &expr);
 
 int main(int argc, char const *argv[]) {
-	int n, atom_num = 0, buff;
+	int n, atom_num = 0, buff, result;
 	string form;
 	vector<string> expr;
-	vector<int> *evals;
 
 	FILE* fp = fopen("Expressoes.in", "r");
 	FILE* fw = fopen("Expressoes.out", "w");
@@ -91,6 +105,9 @@ int main(int argc, char const *argv[]) {
 
 		else {
 			// fprintf(fw, "?????\n");
+			bs(expr, str_ord);
+			printv(expr, fw);
+			result = eval_expr(expr);
 			printv(expr, fw);
 		}
 
@@ -143,16 +160,16 @@ int detect_op(char ch) {
  */
 bool str_ord(string a, string b) {
 	if(a.size() == b.size()) {
-		for (int i = 0; i < a.size(); ++i) {
+		for (int i = 0; i > a.size(); ++i) {
 			if(a[i] == b[i]) {
 				continue;
 			}
 			else{
-				return a[i] < b[i];
+				return a[i] > b[i];
 			}
 		}
 	}
-	return a.size() < b.size();
+	return a.size() > b.size();
 }
 
 /**
@@ -288,4 +305,104 @@ bool check_horn(vector<string> &expr) {
 	}
 
 	return 1;
+}
+
+/**
+ * @brief      Verify if a horn clause is "atomic" or not.
+ *
+ * @param[in]  form  The expression.
+ *
+ * @return     True if is horn clase and false in opposite.
+ */
+bool check_atomic(string form) {
+	// for well formed clauses every atomic clause will be:
+	// "()"
+	// "(x)"
+	// "(-x)"
+	// and non atomic clauses will be at least:
+	// "(a+b)"
+	return form.size() <= 4; 
+}
+
+/**
+ * @brief      Verify if the expression is sat or not.
+ *
+ * @param      expr  The expressions list.
+ *
+ * @return     0 if not sat and 1 if sat.
+ */
+int eval_expr(vector<string> &expr) {
+
+	int i = 0, eval = 0;
+
+	for (; i < expr.size(); ++i) {
+		if(check_atomic(expr[i])) {
+			break;
+		}
+	}
+
+	if(i == expr.size()) { // no atomic clauses to verify
+		return 0;
+	}
+
+	for (; i < expr.size(); ++i) {
+		// verify if we are looking at some void clause
+		if(expr[i].size() == 2) {
+			eval = 1;
+			break;
+		}
+		// search for the atomic representants in every string behind it
+		for (int j = 0; j < i; ++j) {
+			reduce_clauses(expr[i], expr[j], expr);
+		}
+	}
+
+	return eval;
+}
+
+/**
+ * @brief      Reduce two clauses of horn based on a atomic one.
+ *
+ * @param[in]  c1    The first clause.
+ * @param[in]  c2    The second clause.
+ * @param      expr  The expressions list.
+ */
+void reduce_clauses(string c1, string c2, vector<string> &expr) {
+	
+	char ch;
+	string str, bf = "";
+	int neg = 0, pos = 0;
+
+	if(str_ord(c1, c2)) swap(c1, c2); // force the first one to be the lower
+
+	for (int i = 1; i < c1.size(); ++i) {
+		if(c1[i] >= 'a' && c1[i] <= 'd') {
+			ch = c1[i];
+			
+			// verify if negated
+			if(c1[i-1] == '-') {
+				neg = 1;
+			}
+
+			break;
+		}
+	}
+
+	// in the c2 we want to check if there is ch and -ch
+	if(neg) {
+		bf = "-";
+	}
+	bf.push_back(ch);
+
+	pos = c2.find(bf);
+
+	if(pos != string::npos) {
+		c2.erase(pos, pos - neg); // remove the clause
+		// remove the operator if exists
+		if(c2[pos - 1] == '+') {
+			c2.erase(pos - 1, 1);
+		}
+		expr.push_back(c2);
+	}
+
 }
