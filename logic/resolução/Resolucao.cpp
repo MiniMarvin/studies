@@ -42,7 +42,8 @@
  * 
  * 
  * 
- * TODO: CORRECT THE CLAUSE REMOTION
+ * TODO: CORRECT THE SEARCH FOR THE NON NEGATED CLAUSES, AND REPEAT THE ALGORITHM UNTILL
+ * NO CLAUSE HAVE BEEN FOUND
  */
 
 #include <cstdio>
@@ -90,7 +91,8 @@ int main(int argc, char const *argv[]) {
 
 	for (int i = 0; i < n; ++i) {
 		
-		fprintf(fw, "caso #%d\n", i+1);
+		fprintf(fw, "caso #%d: ", i+1);
+		cout << "caso " << i+1 << endl;
 		read_s(fp, form); // Read clause
 
 		// extract every horn clause
@@ -106,9 +108,15 @@ int main(int argc, char const *argv[]) {
 		else {
 			// fprintf(fw, "?????\n");
 			bs(expr, str_ord);
-			printv(expr, fw);
+			// printv(expr, fw);
 			result = eval_expr(expr);
-			printv(expr, fw);
+			// printv(expr, fw);
+			if(result == 1) {
+				fprintf(fw, "insatisfativel\n");
+			}
+			else{
+				fprintf(fw, "satisfativel\n");
+			}
 		}
 
 		
@@ -347,15 +355,37 @@ int eval_expr(vector<string> &expr) {
 
 	for (; i < expr.size(); ++i) {
 		// verify if we are looking at some void clause
-		if(expr[i].size() == 2) {
+		// if(expr[i].size() == 2) {
+		if(expr[i] == "()") {
+			// cout << "apsoifjasopdfij" << endl;
 			eval = 1;
 			break;
 		}
-		// search for the atomic representants in every string behind it
-		for (int j = 0; j < i; ++j) {
+
+		if(!check_atomic(expr[i])){
+			bool keep_track = 0;
+			
+			for (; i < expr.size(); ++i) {
+				if(check_atomic(expr[i])) {
+					keep_track = 1;
+					break;
+				}
+			}
+			continue;
+		}
+
+		// search for the atomic representants in every string inside the list it
+		// for (int j = 0; j < i; ++j) {
+		for (int j = 0; j < expr.size(); ++j) {
+			if(expr[i] == "()" || expr[j] == "()"){
+				eval = 1;
+				return eval;
+			}
 			reduce_clauses(expr[i], expr[j], expr);
 		}
+		cout << "######" << endl;
 	}
+	cout << "-------------------------" << endl;
 
 	return eval;
 }
@@ -370,8 +400,9 @@ int eval_expr(vector<string> &expr) {
 void reduce_clauses(string c1, string c2, vector<string> &expr) {
 	
 	char ch;
-	string str, bf = "";
-	int neg = 0, pos = 0;
+	string str, bf = "", bf2 = "";
+	int neg = 0, pos = 0, pos1, st_pos = 0;
+	bool should_add = false;
 
 	if(str_ord(c1, c2)) swap(c1, c2); // force the first one to be the lower
 
@@ -389,20 +420,52 @@ void reduce_clauses(string c1, string c2, vector<string> &expr) {
 	}
 
 	// in the c2 we want to check if there is ch and -ch
-	if(neg) {
+	if(!neg) {
 		bf = "-";
 	}
 	bf.push_back(ch);
 
-	pos = c2.find(bf);
-
-	if(pos != string::npos) {
-		c2.erase(pos, pos - neg); // remove the clause
-		// remove the operator if exists
-		if(c2[pos - 1] == '+') {
-			c2.erase(pos - 1, 1);
+	while(pos != -1) {
+		pos = c2.find(bf, st_pos);
+		if(neg) {
+			// TODO: fazer a leitura da string começar depois dessa posição
+			if(c2[pos - 1] == '-') {
+				// pos = -1;
+				st_pos = pos + 1;
+				continue;
+			}
 		}
-		expr.push_back(c2);
+		// cout << c2 << bf << " ";
+		// cout << pos << " ";
+
+		if(pos != string::npos) { // found the atomic expression
+			if(!neg) {
+				if(detect_op(c2[pos + 2]) == 1) {
+					c2.erase(pos + 2, 1);
+				}
+				c2.erase(pos, 2);
+			}
+			else {
+				if(detect_op(c2[pos + 1]) == 1) {
+					c2.erase(pos + 1, 1);
+				}
+				c2.erase(pos, 1);
+			}
+
+			if(detect_op(c2[pos - 1]) == 1) {
+				c2.erase(pos - 1, 1);
+			}
+
+			should_add = true;
+			// expr.push_back(c2);
+		}
+
+		cout << c2 << " | " << bf << endl;
+	}
+	cout << endl;
+
+	if(should_add) {
+		expr.push_back(c2);	
 	}
 
 }
