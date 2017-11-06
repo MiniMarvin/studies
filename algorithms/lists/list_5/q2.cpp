@@ -4,21 +4,23 @@
 #define lli long long int
 #define MAX_SIZE 200000
 #define edge_t pair< int, pair< int, int > >
+#define pq priority_queue< edge_t, vector<edge_t>, greater<edge_t> >
+
 using namespace std;
 
 bool sort_edges(edge_t a, edge_t b) {
 	return  (a.first < b.first);
 }
 
-void printv(vector<edge_t> v) {
-	for (int i = 0; i < v.size(); ++i) {
-		cout << v[i].first << " ";
-	}
-	cout << endl;
-}
+// void printv(vector<edge_t> v) {
+// 	for (int i = 0; i < v.size(); ++i) {
+// 		cout << v[i].first << " ";
+// 	}
+// 	cout << endl;
+// }
 
 bool DFS(vector<int> g[], bool visits[], int a, int b) {
-	cout << a << " " << b << endl;
+	// cout << a << " " << b << endl;
 
 	if(visits[a]) { // já visitou, sem caminhos possíveis
 		return 0;
@@ -46,26 +48,30 @@ bool DFS(vector<int> g[], bool visits[], int a, int b) {
 	return sol;
 }
 
-lli minimum_tree(vector<edge_t> edges) {
+lli minimum_tree(pq &edges) {
 	int visited[MAX_SIZE] = {0};
 	lli min = 0;
 	vector<int> g[MAX_SIZE]; // grafo da minimum spanning tree
 	bool visits[MAX_SIZE] = {0}; // grafo da minimum spanning tree
 
-	for (int i = 0; i < edges.size(); ++i) {
+	// for (int i = 0; i < edges.size(); ++i) {
+	while (!edges.empty()) {
 		// TODO: verificar se existe um ciclo ou não
-		if(visited[edges[i].second.first] && visited[edges[i].second.second]) {
+		if(visited[edges.top().second.first] && visited[edges.top().second.second]) {
 			// busca um caminho
-			if(DFS(g, visits, edges[i].second.first, edges[i].second.second)) {
+			if(DFS(g, visits, edges.top().second.first, edges.top().second.second)) {
+				edges.pop();
 				continue;
 			}
-			cout << "---------" << endl;
+			// cout << "---------" << endl;
 		}
 
-		min += edges[i].first;
-		visited[edges[i].second.first] = visited[edges[i].second.second] = 1;
-		g[edges[i].second.first].push_back(edges[i].second.second);
-		g[edges[i].second.second].push_back(edges[i].second.first);
+		min += edges.top().first;
+		visited[edges.top().second.first] = visited[edges.top().second.second] = 1;
+		g[edges.top().second.first].push_back(edges.top().second.second);
+		g[edges.top().second.second].push_back(edges.top().second.first);
+
+		edges.pop();
 	}
 
 	return min;
@@ -80,27 +86,30 @@ int main(int argc, char const *argv[]) {
 	int x, y, z;
 	lli min = 0;
 	
-	vector < edge_t > edges;
+	// vector < edge_t > edges;
+	pq edges;
 	// priority_queue<edge_t, vector<edge_t>, greater> edges;
 
 	while(cin >> m >> n, n != 0 || m != 0) {
 		total = sum = min = 0;
-		edges.clear();
+		// edges.clear();
 
 	    for (int i = 0; i < n; ++i) {
 	    	cin >> x >> y >> z;
 
 	    	total += z;
-	    	edges.push_back(make_pair(z, make_pair(x, y)));
+	    	// edges.push_back(make_pair(z, make_pair(x, y)));
+	    	edges.push(make_pair(z, make_pair(x, y)));
 	    }
 
-	    sort(edges.begin(), edges.end(), sort_edges);
+	    // sort(edges.begin(), edges.end(), sort_edges);
 
-	    printv(edges);
-	    cout << total << endl;
+	    // printv(edges);
+	    // cout << total << endl;
 	    min = minimum_tree(edges);
-	    cout << min << endl;
-	    cout << total - min << endl;
+	    // cout << min << endl;
+	    // cout << total - min << endl;
+	    printf("%d\n", total - min);
 	}
 
 	return 0;

@@ -1,5 +1,4 @@
 /**
- * Truth table
  * Copyright (C) 2017  Caio Moreira Gomes
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @Author: Caio M. Gomes
+ * @Project: Truth table
  * @Description: Project presented to the discipline of Logic for Computer Sciences
  * @Place: Recife
  * @Year: 2017

@@ -1,5 +1,4 @@
 /**
- * Truth table
  * Copyright (C) 2017  Caio Moreira Gomes
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -16,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @Author: Caio M. Gomes
+ * @Project: Resolution Method
  * @Description: Project presented to the discipline of Logic for Computer Sciences
  * @Place: Recife
  * @Year: 2017
@@ -40,10 +40,6 @@
  * -> > so
  * -> - negate
  * 
- * 
- * 
- * TODO: CORRECT THE SEARCH FOR THE NON NEGATED CLAUSES, AND REPEAT THE ALGORITHM UNTILL
- * NO CLAUSE HAVE BEEN FOUND
  */
 
 #include <cstdio>
@@ -92,7 +88,7 @@ int main(int argc, char const *argv[]) {
 	for (int i = 0; i < n; ++i) {
 		
 		fprintf(fw, "caso #%d: ", i+1);
-		cout << "caso " << i+1 << endl;
+		// cout << "caso " << i+1 << endl;
 		read_s(fp, form); // Read clause
 
 		// extract every horn clause
@@ -285,6 +281,13 @@ int ex_clause(string form, vector<string> &expr) {
 	return 0;
 }
 
+/**
+ * @brief      Check if the expression set has only horn clauses.
+ *
+ * @param      expr  The expressions set.
+ *
+ * @return     True if the expressions set has only horn clauses, otherwise returns false.
+ */
 bool check_horn(vector<string> &expr) {
 
 	int atoms, m;
@@ -383,9 +386,9 @@ int eval_expr(vector<string> &expr) {
 			}
 			reduce_clauses(expr[i], expr[j], expr);
 		}
-		cout << "######" << endl;
+		// cout << "######" << endl;
 	}
-	cout << "-------------------------" << endl;
+	// cout << "-------------------------" << endl;
 
 	return eval;
 }
@@ -460,9 +463,9 @@ void reduce_clauses(string c1, string c2, vector<string> &expr) {
 			// expr.push_back(c2);
 		}
 
-		cout << c2 << " | " << bf << endl;
+		// cout << c2 << " | " << bf << endl;
 	}
-	cout << endl;
+	// cout << endl;
 
 	if(should_add) {
 		expr.push_back(c2);	
