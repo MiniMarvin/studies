@@ -12,13 +12,6 @@ bool sort_edges(edge_t a, edge_t b) {
 	return  (a.first < b.first);
 }
 
-// void printv(vector<edge_t> v) {
-// 	for (int i = 0; i < v.size(); ++i) {
-// 		cout << v[i].first << " ";
-// 	}
-// 	cout << endl;
-// }
-
 bool DFS(vector<int> g[], bool visits[], int a, int b) {
 	// cout << a << " " << b << endl;
 
